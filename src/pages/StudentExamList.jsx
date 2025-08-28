@@ -1,75 +1,80 @@
 import { useState, useEffect } from "react";
-import { Container, Table, Card, Row, Col, Button } from "react-bootstrap";
+import { Container, Table, Button, Card, Row, Col } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import useAuthStore from "../store/authStore";
 
 const StudentExamList = () => {
-    const [examResults, setExamResults] = useState([]);
-    const user = JSON.parse(localStorage.getItem("user"));
-    const studentId = user?.student?._id;
-    const navigate = useNavigate();
+  const [exams, setExams] = useState([]);
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
 
-    useEffect(() => {
-        if (studentId) fetchStudentExams();
-    }, [studentId]);
+  useEffect(() => {
+    if (!user || user.student.role !== "student") {
+      toast.error("Access denied. Students only.");
+      navigate("/dashboard");
+      return;
+    }
+    fetchExams();
+  }, []);
 
-    const fetchStudentExams = async () => {
-        try {
-            const response = await axios.get(`http://localhost:6000/api/student/${studentId}/exams`, {
-                headers: { Authorization: `Bearer ${user.token}` },
-            });
-            setExamResults(response.data.exams);
-        } catch (error) {
-            toast.error("Failed to fetch exams.");
-        }
-    };
+  const fetchExams = async () => {
+    try {
+      // UPDATED: Use /api/v1 endpoint
+      const response = await axios.get(`http://localhost:5000/api/v1/student/${user.student._id}/exams`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      setExams(response.data.exams);
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to fetch exams");
+    }
+  };
 
-    return (
-        <Container className="mt-5">
-            <Card className="shadow-lg p-4">
-                <Row>
-                    <Col sm={8}>
-                        <h2 className="text-primary mb-4">📜 My Exam Results</h2>
-                    </Col>
-                    <Col sm={4} className="text-end">
-                        <Button variant="secondary" onClick={() => navigate(-1)}>⬅️ Back</Button>
-                    </Col>
-                </Row>
-
-                <Table striped bordered hover responsive className="text-center">
-                    <thead className="bg-primary text-white">
-                        <tr>
-                            <th>#</th>
-                            <th>Exam Title</th>
-                            <th>Date</th>
-                            <th>Score</th>
-                            <th>Result</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {examResults.length > 0 ? (
-                            examResults.map((exam, index) => (
-                                <tr key={exam._id}>
-                                    <td>{index + 1}</td>
-                                    <td>{exam?.title || "Unknown Exam"}</td>
-                                    <td>{new Date(exam.examDate).toLocaleString()}</td>
-                                    <td>{exam.score}</td>
-                                    <td className={exam.passed ? "text-success" : "text-danger"}>
-                                        {exam.passed ? "✅ Passed" : "❌ Failed"}
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="5">No exams taken yet.</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </Table>
-            </Card>
-        </Container>
-    );
+  return (
+    <Container className="mt-5">
+      <Card className="shadow-lg p-4">
+        <Row>
+          <Col sm={8}>
+            <h2 className="text-primary mb-4">📝 My Exams</h2>
+          </Col>
+          <Col sm={4} className="text-end">
+            <Button variant="secondary" onClick={() => navigate("/dashboard")}>
+              ⬅️ Back
+            </Button>
+          </Col>
+        </Row>
+        <Table striped bordered hover responsive className="text-center">
+          <thead className="bg-primary text-white">
+            <tr>
+              <th>#</th>
+              <th>Title</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Exam Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {exams.map((exam, index) => (
+              <tr key={exam.examId}>
+                <td>{index + 1}</td>
+                <td>{exam.title}</td>
+                <td>{exam.score}</td>
+                <td>{exam.passed ? "✅ Passed" : "❌ Failed"}</td>
+                <td>{exam.examDate}</td>
+                <td>
+                  <Button as={Link} to={`/result/${exam.examId}`} variant="info" size="sm">
+                    📊 View Result
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Card>
+    </Container>
+  );
 };
 
 export default StudentExamList;

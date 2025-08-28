@@ -1,184 +1,129 @@
 import { useState, useEffect } from "react";
-import { Container, Table, Button, Form, Card, Modal, Row, Col } from "react-bootstrap";
-import * as Yup from "yup";
+import { Container, Table, Button, Form, Card, Row, Col } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { ErrorMessage, Field, Formik } from "formik";
-import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // UPDATED: Added for delete confirmation
+import useAuthStore from "../store/authStore";
 
-function StudentList() {
-    const [students, setStudents] = useState([]);
-    const [search, setSearch] = useState("");
-    const [show, setShow] = useState(false);
-    const [selectedStudent, setSelectedStudent] = useState(null);
-    const navigate = useNavigate()
+const StudentList = () => {
+  const [students, setStudents] = useState([]);
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
 
-    const user = localStorage.getItem("user");
-    if (!user) throw new Error("No token found");
+  useEffect(() => {
+    if (!user || user.student.role !== "admin") {
+      toast.error("Access denied. Admins only.");
+      navigate("/dashboard");
+      return;
+    }
+    fetchStudents();
+  }, []);
 
-    const parsedUser = JSON.parse(user);
-    if (!parsedUser.token) throw new Error("No token found in user object");
+  const fetchStudents = async () => {
+    try {
+      // UPDATED: Use /api/v1 endpoint
+      const response = await axios.get(`http://localhost:5000/api/v1/admin?search=${search}`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      setStudents(response.data.students);
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to fetch students");
+    }
+  };
 
-    useEffect(() => {
-        fetchStudents();
-    }, []);
-
-    const fetchStudents = async () => {
+  // UPDATED: Added delete student function
+  const handleDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
         try {
-            const response = await axios.get("http://localhost:6000/api/admin/students", {
-                headers: { Authorization: `Bearer ${parsedUser.token}` },
-            });
-            setStudents(response.data.students);
+          const response = await axios.delete(`http://localhost:5000/api/v1/admin/student/${id}`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          });
+          setStudents(students.filter((student) => student._id !== id));
+          Swal.fire("Deleted!", response.data.message, "success");
         } catch (error) {
-            console.log({ error });
-            toast.error(error?.response?.data?.error || "Failed to fetch students");
+          Swal.fire("Error!", error.response?.data?.error || "Failed to delete student", "error");
         }
-    };
+      }
+    });
+  };
 
-    const handleDelete = async (id) => {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "This action cannot be undone!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "Cancel",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const response = await axios.delete(`http://localhost:6000/api/admin/student/${id}`, {
-                        headers: { Authorization: `Bearer ${parsedUser.token}` },
-                    });
-
-                    setStudents((prevStudents) => prevStudents.filter(student => student._id !== id));
-
-                    Swal.fire("Deleted!", response.data.message, "success");
-                } catch (error) {
-                    Swal.fire("Error!", "Failed to delete student.", "error");
-                }
-            }
-        });
-    };
-
-    const handleEditClick = (student) => {
-        setSelectedStudent(student);
-        setShow(true);
-    };
-
-    const handleUpdate = async (values, { setSubmitting }) => {
-        try {
-            const response = await axios.put(`http://localhost:6000/api/admin/student/${selectedStudent._id}`, values, {
-                headers: { Authorization: `Bearer ${parsedUser.token}` },
-            });
-            toast.success(response.data.message);
-            setStudents(students.map((s) => (s._id === selectedStudent._id ? { ...s, ...values } : s)));
-            setShow(false);
-        } catch (error) {
-            toast.error(error?.response?.data?.error || "Error updating student!");
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    return (
-        <Container className="mt-5">
-            <Card className="shadow-lg p-4">
-                <Row className="">
-                    <Col sm={8}>
-                        <h2 className="text-primary mb-4">📚 Student List</h2>
-                    </Col>
-                    <Col sm={4}>
-                        <Button variant="secondary" onClick={() => navigate(-1)}>⬅️ Back</Button>
-                    </Col>
-                </Row>
-
-                <Form className="mb-3">
-                    <Form.Control
-                        type="text"
-                        placeholder="Search students..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                </Form>
-
-                <Table striped bordered hover responsive className="text-center">
-                    <thead className="bg-primary text-white">
-                        <tr>
-                            <th>#</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {students.length === 0 && <tr><td colSpan={4}>No students found</td></tr>}
-                        {students
-                            .filter(student => student.name.toLowerCase().includes(search.toLowerCase()))
-                            .map((student, index) => (
-                                <tr key={student._id}>
-                                    <td>{index + 1}</td>
-                                    <td>{student.name}</td>
-                                    <td>{student.email}</td>
-                                    <td>
-                                        <Button onClick={() => handleEditClick(student)} variant="warning" className="me-2" size="sm">
-                                            ✏️
-                                        </Button>
-                                        <Button variant="danger" onClick={() => handleDelete(student._id)} size="sm">
-                                            ❌
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
-                    </tbody>
-                </Table>
-            </Card>
-
-            {selectedStudent && (
-                <Modal show={show} onHide={() => setShow(false)} centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Update Student</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Formik
-                            initialValues={{
-                                name: selectedStudent.name,
-                                email: selectedStudent.email
-                            }}
-                            validationSchema={Yup.object({
-                                name: Yup.string().required("Name is required").min(3, "Name must be at least 3 characters"),
-                                email: Yup.string().required("Email is required").email("Invalid email format")
-                            })}
-                            onSubmit={handleUpdate}
-                        >
-                            {({ handleSubmit, isSubmitting }) => (
-                                <Form onSubmit={handleSubmit}>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Name</Form.Label>
-                                        <Field type="text" name="name" as={Form.Control} />
-                                        <ErrorMessage name="name" component="div" className="text-danger small mt-1" />
-                                    </Form.Group>
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Email</Form.Label>
-                                        <Field type="email" name="email" as={Form.Control} />
-                                        <ErrorMessage name="email" component="div" className="text-danger small mt-1" />
-                                    </Form.Group>
-                                    <Modal.Footer>
-                                        <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
-                                        <Button variant="primary" type="submit" disabled={isSubmitting}>
-                                            {isSubmitting ? "Updating..." : "Update"}
-                                        </Button>
-                                    </Modal.Footer>
-                                </Form>
-                            )}
-                        </Formik>
-                    </Modal.Body>
-                </Modal>
-            )}
-        </Container>
-    );
-}
+  return (
+    <Container className="mt-5">
+      <Card className="shadow-lg p-4">
+        <Row>
+          <Col sm={8}>
+            <h2 className="text-primary mb-4">📋 Student List</h2>
+          </Col>
+          <Col sm={4} className="text-end">
+            <Button variant="secondary" onClick={() => navigate("/dashboard")}>
+              ⬅️ Back
+            </Button>
+          </Col>
+        </Row>
+        <Form className="mb-3">
+          <Form.Control
+            type="text"
+            placeholder="Search students by name or email..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              fetchStudents();
+            }}
+          />
+        </Form>
+        <Table striped bordered hover responsive className="text-center">
+          <thead className="bg-primary text-white">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {students.map((student, index) => (
+              <tr key={student._id}>
+                <td>{index + 1}</td>
+                <td>{student.name}</td>
+                <td>{student.email}</td>
+                <td>{new Date(student.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <Button
+                    variant="warning"
+                    className="me-2"
+                    size="sm"
+                    onClick={() => navigate(`/students/edit/${student._id}`)}
+                  >
+                    ✏️ Edit
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => handleDelete(student._id)}
+                  >
+                    ❌ Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Card>
+    </Container>
+  );
+};
 
 export default StudentList;

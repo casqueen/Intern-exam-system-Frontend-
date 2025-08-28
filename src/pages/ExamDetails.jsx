@@ -1,81 +1,72 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Container, Card, ListGroup, Spinner, Alert, Button, Row, Col } from "react-bootstrap";
+import { Container, Card, ListGroup, Button } from "react-bootstrap";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
+import useAuthStore from "../store/authStore";
 
-function ExamDetails() {
-    const { id } = useParams();
-    const [exam, setExam] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const navigate = useNavigate()
-    useEffect(() => {
-        fetchExamDetail();
-    }, []);
+const ExamDetails = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const [exam, setExam] = useState(null);
 
-    const fetchExamDetail = async () => {
-        try {
-            const user = localStorage.getItem("user");
-            if (!user) throw new Error("User not found in local storage");
-
-            const parsedUser = JSON.parse(user);
-            if (!parsedUser.token) throw new Error("Token not found");
-
-            const response = await axios.get(`http://localhost:6000/api/exams/${id}`, {
-                headers: { Authorization: `Bearer ${parsedUser.token}` },
-            });
-
-            setExam(response.data);
-        } catch (err) {
-            setError(err.response?.data?.error || "Failed to fetch exam details");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return (
-            <Container className="mt-5 text-center">
-                <Spinner animation="border" />
-            </Container>
-        );
+  useEffect(() => {
+    if (!user || user.student.role !== "admin") {
+      toast.error("Access denied. Admins only.");
+      navigate("/dashboard");
+      return;
     }
+    fetchExam();
+  }, [id]);
 
-    if (error) {
-        return (
-            <Container className="mt-5">
-                <Alert variant="danger">{error}</Alert>
-            </Container>
-        );
+  const fetchExam = async () => {
+    try {
+      // UPDATED: Use /api/v1 endpoint
+      const response = await axios.get(`http://localhost:5000/api/v1/exams/${id}`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      setExam(response.data);
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to fetch exam");
     }
-    return (
-        <Container className="mt-5">
-            <Card className="shadow-lg p-4">
-                <Row className="">
-                    <Col sm={8}>
-                        <h2 className="text-primary">📝 {exam.title}</h2>
-                    </Col>
-                    <Col sm={4}>
-                        <Button variant="secondary" onClick={() => navigate(-1)}>⬅️ Back</Button>
-                    </Col>
-                </Row>
-                <h4 className="mt-4">Questions:</h4>
-                <ListGroup className="mt-2">
-                    {exam.questions.map((q, index) => (
-                        <ListGroup.Item key={q._id}>
-                            <strong>Q{index + 1}:</strong> {q.question}
-                            <ul className="mt-2">
-                                {q.options.map((option, i) => (
-                                    <li key={i}>{option}</li>
-                                ))}
-                            </ul>
-                            <strong>✅ Correct Answer:</strong> {q.correctAnswer}
-                        </ListGroup.Item>
-                    ))}
-                </ListGroup>
-            </Card>
-        </Container>
-    )
-}
+  };
 
-export default ExamDetails
+  return (
+    <Container className="mt-5">
+      <Card className="shadow-lg p-4">
+        <h2 className="text-primary mb-4">📋 Exam Details</h2>
+        {exam ? (
+          <>
+            <h4>{exam.title}</h4>
+            <p>Created: {new Date(exam.createdAt).toLocaleDateString()}</p>
+            <h5>Questions:</h5>
+            <ListGroup>
+              {exam.questions.map((q, index) => (
+                <ListGroup.Item key={q._id}>
+                  <strong>Question {index + 1}:</strong> {q.question}
+                  <br />
+                  <strong>Options:</strong> {q.options.join(", ")}
+                  <br />
+                  <strong>Correct Answer:</strong> {q.correctAnswer}
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+            <div className="mt-4">
+              <Button variant="primary" as={Link} to={`/exams/edit/${exam._id}`} className="me-2">
+                ✏️ Edit Exam
+              </Button>
+              <Button variant="secondary" onClick={() => navigate("/exams")}>
+                ⬅️ Back
+              </Button>
+            </div>
+          </>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </Card>
+    </Container>
+  );
+};
+
+export default ExamDetails;
