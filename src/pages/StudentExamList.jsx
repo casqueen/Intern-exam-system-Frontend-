@@ -22,7 +22,7 @@ const StudentExamList = () => {
   const fetchExams = async () => {
     try {
       // UPDATED: Use /api/v1 endpoint
-      const response = await axios.get(`http://localhost:5000/api/v1/student/${user.student._id}/exams`, {
+      const response = await axios.get(`http://localhost:6000/api/v1/student/${user.student._id}/exams`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setExams(response.data.exams);

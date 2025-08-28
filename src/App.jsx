@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavbarComponent from "./components/NavbarComponent";
-import Footer from "./components/Footer"; // UPDATED: Added Footer import
+import Footer from "./components/Footer"; 
 import Home from "./pages/Home";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
@@ -20,9 +20,9 @@ import StudentExamList from "./pages/StudentExamList";
 function App() {
   return (
     <Router>
-      <div className="d-flex flex-column min-vh-100"> {/* UPDATED: Added flex layout for sticky footer */}
+      <div className="d-flex flex-column min-vh-100"> 
         <NavbarComponent />
-        <main className="flex-grow-1"> {/* UPDATED: Wrapped Routes in main for content */}
+        <main className="flex-grow-1"> 
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -39,7 +39,7 @@ function App() {
             <Route path="/exam-list" element={<StudentExamList />} />
           </Routes>
         </main>
-        <Footer /> {/* UPDATED: Added Footer */}
+        <Footer /> 
         <ToastContainer position="top-right" autoClose={3000} />
       </div>
     </Router>

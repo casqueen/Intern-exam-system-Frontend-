@@ -28,7 +28,7 @@ const CreateExam = () => {
       const fetchExam = async () => {
         try {
           // UPDATED: Use /api/v1 endpoint
-          const response = await axios.get(`http://localhost:5000/api/v1/exams/${id}`, {
+          const response = await axios.get(`http://localhost:6000/api/v1/exams/${id}`, {
             headers: { Authorization: `Bearer ${user.token}` },
           });
           setInitialValues(response.data);
@@ -65,8 +65,8 @@ const CreateExam = () => {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       const url = isEditMode
-        ? `http://localhost:5000/api/v1/exams/${id}`
-        : `http://localhost:5000/api/v1/exams`;
+        ? `http://localhost:6000/api/v1/exams/${id}`
+        : `http://localhost:6000/api/v1/exams`;
       const method = isEditMode ? "put" : "post";
       const response = await axios[method](url, values, {
         headers: { Authorization: `Bearer ${user.token}` },

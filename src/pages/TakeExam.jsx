@@ -24,7 +24,7 @@ const TakeExam = () => {
   const fetchExam = async () => {
     try {
       // UPDATED: Use /api/v1 endpoint
-      const response = await axios.get(`http://localhost:5000/api/v1/exams/${id}`, {
+      const response = await axios.get(`http://localhost:6000/api/v1/exams/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setExam(response.data);
@@ -53,7 +53,7 @@ const TakeExam = () => {
     try {
       // UPDATED: Use /api/v1 endpoint
       const response = await axios.post(
-        `http://localhost:5000/api/v1/student/exams/${id}/submit`,
+        `http://localhost:6000/api/v1/student/exams/${id}/submit`,
         { studentId: user.student._id, answers },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );

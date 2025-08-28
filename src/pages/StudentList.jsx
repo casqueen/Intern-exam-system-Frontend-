@@ -24,7 +24,7 @@ const StudentList = () => {
   const fetchStudents = async () => {
     try {
       // UPDATED: Use /api/v1 endpoint
-      const response = await axios.get(`http://localhost:5000/api/v1/admin?search=${search}`, {
+      const response = await axios.get(`http://localhost:6000/api/v1/admin?search=${search}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setStudents(response.data.students);
@@ -47,7 +47,7 @@ const StudentList = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`http://localhost:5000/api/v1/admin/student/${id}`, {
+          const response = await axios.delete(`http://localhost:6000/api/v1/admin/student/${id}`, {
             headers: { Authorization: `Bearer ${user.token}` },
           });
           setStudents(students.filter((student) => student._id !== id));
