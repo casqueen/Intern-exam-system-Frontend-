@@ -21,7 +21,7 @@ const ExamResults = () => {
 
   const fetchExamResults = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/admin/exam-results/${examId}`, {
+      const response = await axios.get(`http://localhost:6000/api/admin/exam-results/${examId}`, {
         headers: { Authorization: `Bearer ${parsedUser.token}` },
       });
       setResults(response.data);

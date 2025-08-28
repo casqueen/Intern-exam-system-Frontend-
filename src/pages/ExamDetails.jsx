@@ -21,7 +21,7 @@ function ExamDetails() {
             const parsedUser = JSON.parse(user);
             if (!parsedUser.token) throw new Error("Token not found");
 
-            const response = await axios.get(`http://localhost:5000/api/exams/${id}`, {
+            const response = await axios.get(`http://localhost:6000/api/exams/${id}`, {
                 headers: { Authorization: `Bearer ${parsedUser.token}` },
             });
 

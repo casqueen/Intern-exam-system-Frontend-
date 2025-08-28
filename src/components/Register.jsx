@@ -15,7 +15,7 @@ const Register = () => {
   });
   const handleRegister = async (values, { setSubmitting, setErrors }) => { // UPDATED: Renamed handleLogin to handleRegister for clarity
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/register", values);
+      const response = await axios.post("http://localhost:6000/api/auth/register", values);
       const { message } = response.data; // UPDATED: Removed unused 'data'
       toast.success(message);
       navigate("/login");

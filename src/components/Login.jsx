@@ -16,7 +16,7 @@ const Login = () => {
   });
   const handleLogin = async (values, { setSubmitting, setErrors }) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", values);
+      const response = await axios.post("http://localhost:6000/api/auth/login", values);
       const { token, student } = response.data; // UPDATED: Removed unused 'admin' from destructuring
       login({ student, token });
       toast.success(`${student.role.charAt(0).toUpperCase() + student.role.slice(1)} logged in successfully!`); // UPDATED: Unified toast message based on role

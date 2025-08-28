@@ -47,7 +47,7 @@ const CreateExam = () => {
     const handleSubmit = async (values, { setSubmitting }) => {
         try {
             const response = await axios.post(
-                "http://localhost:5000/api/exams/create",
+                "http://localhost:6000/api/exams/create",
                 values,
                 { headers: { Authorization: `Bearer ${parsedUser.token}` } }
             );

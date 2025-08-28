@@ -26,7 +26,7 @@ function StudentList() {
 
     const fetchStudents = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/admin/students", {
+            const response = await axios.get("http://localhost:6000/api/admin/students", {
                 headers: { Authorization: `Bearer ${parsedUser.token}` },
             });
             setStudents(response.data.students);
@@ -49,7 +49,7 @@ function StudentList() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await axios.delete(`http://localhost:5000/api/admin/student/${id}`, {
+                    const response = await axios.delete(`http://localhost:6000/api/admin/student/${id}`, {
                         headers: { Authorization: `Bearer ${parsedUser.token}` },
                     });
 
@@ -70,7 +70,7 @@ function StudentList() {
 
     const handleUpdate = async (values, { setSubmitting }) => {
         try {
-            const response = await axios.put(`http://localhost:5000/api/admin/student/${selectedStudent._id}`, values, {
+            const response = await axios.put(`http://localhost:6000/api/admin/student/${selectedStudent._id}`, values, {
                 headers: { Authorization: `Bearer ${parsedUser.token}` },
             });
             toast.success(response.data.message);

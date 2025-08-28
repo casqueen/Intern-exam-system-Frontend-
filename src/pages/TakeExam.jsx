@@ -22,7 +22,7 @@ const TakeExam = () => {
 
     const fetchExam = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/exams/${id}`, {
+            const response = await axios.get(`http://localhost:6000/api/exams/${id}`, {
                 headers: { Authorization: `Bearer ${user.token}` },
             });
             setExam(response.data);
@@ -48,7 +48,7 @@ const TakeExam = () => {
             };
             console.log({ payload });
             await axios.post(
-                `http://localhost:5000/api/student/exams/${id}/submit`,
+                `http://localhost:6000/api/student/exams/${id}/submit`,
                 payload,
                 { headers: { Authorization: `Bearer ${user.token}` } }
             );

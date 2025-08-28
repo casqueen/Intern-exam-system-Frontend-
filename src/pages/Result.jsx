@@ -17,7 +17,7 @@ const Result = () => {
     }, []);
     const fetchResult = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/student/results/${id}?studentId=${studentId}`, {
+            const response = await axios.get(`http://localhost:6000/api/student/results/${id}?studentId=${studentId}`, {
                 headers: { Authorization: `Bearer ${JSON.parse(localStorage.getItem("user")).token}` },
             });
 
