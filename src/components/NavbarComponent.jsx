@@ -1,43 +1,51 @@
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 const NavbarComponent = () => {
-    const { user, logout } = useAuthStore();
-    const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout();
-        toast.success("Logged out successfully!");
-        navigate("/login");
-    };
-    return (
-        <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
-            <Container>
-                <Navbar.Brand href="/">Exam Admin</Navbar.Brand>
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="ms-auto">
-                        {user ? (
-                            <>
-                                <Nav.Link href="/dashboard">Dashboard</Nav.Link>
-                                <Button variant="danger" onClick={handleLogout} className="ms-2">
-                                    Logout
-                                </Button>
-                            </>
-                        ) : (
-                            <>
-                                <Nav.Link href="/login">Login</Nav.Link>
-                                <Nav.Link href="/register">Register</Nav.Link>
-                            </>
-                        )}
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
-        </Navbar>
-    );
+  return (
+    <Navbar bg="primary" variant="dark" expand="lg" className="mb-4">
+      <Container>
+        <Navbar.Brand as={Link} to="/">Exam Management</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ms-auto">
+            {user ? (
+              <>
+                {user.student.role === "admin" && (
+                  <>
+                    <Nav.Link as={Link} to="/students">Students</Nav.Link>
+                    <Nav.Link as={Link} to="/exams">Exams</Nav.Link>
+                  </>
+                )}
+                {user.student.role === "student" && (
+                  <>
+                    <Nav.Link as={Link} to="/exams">Available Exams</Nav.Link>
+                    <Nav.Link as={Link} to="/exam-list">My Exams</Nav.Link>
+                  </>
+                )}
+                <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>
+                <Button variant="outline-light" onClick={handleLogout}>Logout</Button>
+              </>
+            ) : (
+              <>
+                <Nav.Link as={Link} to="/login">Login</Nav.Link>
+                <Nav.Link as={Link} to="/register">Register</Nav.Link>
+              </>
+            )}
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
+  );
 };
 
 export default NavbarComponent;
