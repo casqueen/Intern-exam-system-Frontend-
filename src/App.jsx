@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavbarComponent from "./components/NavbarComponent";
+import Footer from "./components/Footer"; // UPDATED: Added Footer import
 import Home from "./pages/Home";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
@@ -19,22 +20,28 @@ import StudentExamList from "./pages/StudentExamList";
 function App() {
   return (
     <Router>
-      <NavbarComponent />
-      <ToastContainer />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/students" element={<StudentList />} />
-        <Route path="/exams" element={<ExamList />} />
-        <Route path="/exams/view/:id" element={<ExamDetails />} />
-        <Route path="/exams/create" element={<CreateExam />} />
-        <Route path="/exams/take/:id" element={<TakeExam />} />
-        <Route path="/result/:id" element={<Result />} />
-        <Route path="/exams/results/:examId" element={<ExamResults />} />
-        <Route path="/exam-list" element={<StudentExamList />} />
-      </Routes>
+      <div className="d-flex flex-column min-vh-100"> {/* UPDATED: Added flex layout for sticky footer */}
+        <NavbarComponent />
+        <main className="flex-grow-1"> {/* UPDATED: Wrapped Routes in main for content */}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/students" element={<StudentList />} />
+            <Route path="/exams" element={<ExamList />} />
+            <Route path="/exams/view/:id" element={<ExamDetails />} />
+            <Route path="/exams/create" element={<CreateExam />} />
+            <Route path="/exams/edit/:id" element={<CreateExam />} />
+            <Route path="/exams/take/:id" element={<TakeExam />} />
+            <Route path="/result/:id" element={<Result />} />
+            <Route path="/exams/results/:examId" element={<ExamResults />} />
+            <Route path="/exam-list" element={<StudentExamList />} />
+          </Routes>
+        </main>
+        <Footer /> {/* UPDATED: Added Footer */}
+        <ToastContainer position="top-right" autoClose={3000} />
+      </div>
     </Router>
   );
 }
