@@ -15,7 +15,7 @@ const Register = () => {
   });
   const handleRegister = async (values, { setSubmitting, setErrors }) => { // UPDATED: Renamed handleLogin to handleRegister for clarity
     try {
-      const response = await axios.post("http://localhost:6000/api/v1/auth/register", values);
+      const response = await axios.post("http://localhost:6000/api/v2/auth/register", values);
       const { message } = response.data; // UPDATED: Removed unused 'data'
       toast.success(message);
       navigate("/login");
@@ -80,7 +80,7 @@ const Register = () => {
                 </Field>
                 <ErrorMessage name="role" component="div" className="text-danger" />
               </Form.Group>
-              <Button type="submit" variant="primary" className="w-100" disabled={isSubmitting}>
+              <Button type="submit" variant="success" className="w-100" disabled={isSubmitting}>
                 {isSubmitting ? "Register..." : "Register"}
               </Button>
             </FormikForm>

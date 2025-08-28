@@ -22,8 +22,8 @@ const ExamResults = () => {
 
   const fetchResults = async () => {
     try {
-      // UPDATED: Use /api/v1 endpoint
-      const response = await axios.get(`http://localhost:6000/api/v1/admin/exam-results/${examId}`, {
+      // UPDATED: Use /api/v2 endpoint
+      const response = await axios.get(`http://localhost:6000/api/v2/admin/exam-results/${examId}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setResults(response.data);

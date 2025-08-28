@@ -32,13 +32,13 @@ const NavbarComponent = () => {
                     <Nav.Link as={Link} to="/exam-list">My Exams</Nav.Link>
                   </>
                 )}
-                <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>
+                <Nav.Link as={Link} to="/dashboard" >Dashboard</Nav.Link>
                 <Button variant="outline-light" onClick={handleLogout}>Logout</Button>
               </>
             ) : (
               <>
-                <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                <Nav.Link as={Link} to="/register">Register</Nav.Link>
+                <Nav.Link as={Link} to="/login" className="text-warning">Login</Nav.Link>
+                <Nav.Link as={Link} to="/register" className="text-warning">Register</Nav.Link>
               </>
             )}
           </Nav>

@@ -16,7 +16,7 @@ const Login = () => {
   });
   const handleLogin = async (values, { setSubmitting, setErrors }) => {
     try {
-      const response = await axios.post("http://localhost:6000/api/v1/auth/login", values);
+      const response = await axios.post("http://localhost:6000/api/v2/auth/login", values);
       const { token, student } = response.data; // UPDATED: Removed unused 'admin' from destructuring
       login({ student, token });
       toast.success(`${student.role.charAt(0).toUpperCase() + student.role.slice(1)} logged in successfully!`); // UPDATED: Unified toast message based on role
@@ -72,7 +72,7 @@ const Login = () => {
                 </Field>
                 <ErrorMessage name="role" component="div" className="text-danger" />
               </Form.Group>
-              <Button type="submit" variant="primary" className="w-100" disabled={isSubmitting}>
+              <Button type="submit" variant="success" className="w-100" disabled={isSubmitting}>
                 {isSubmitting ? "Logging in..." : "Login"}
               </Button>
             </FormikForm>

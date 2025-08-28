@@ -23,8 +23,8 @@ const ExamList = () => {
 
   const fetchExams = async () => {
     try {
-      // UPDATED: Use /api/v1 endpoint
-      const response = await axios.get(`http://localhost:6000/api/v1/exams`, {
+      // UPDATED: Use /api/v2 endpoint
+      const response = await axios.get(`http://localhost:6000/api/v2/exams`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setExams(response.data.exams);
@@ -46,7 +46,7 @@ const ExamList = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`http://localhost:6000/api/v1/exams/${id}`, {
+          const response = await axios.delete(`http://localhost:6000/api/v2/exams/${id}`, {
             headers: { Authorization: `Bearer ${user.token}` },
           });
           setExams(exams.filter((exam) => exam._id !== id));

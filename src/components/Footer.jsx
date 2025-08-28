@@ -8,12 +8,12 @@ const Footer = () => {
     <Navbar bg="dark" variant="dark" fixed="bottom" className="py-2">
       <Container>
         <Navbar.Text className="text-white">
-          &copy; {new Date().getFullYear()} Exam Management System
+          &copy; {new Date().getFullYear()} Built by <a href="https://mail.google.com/mail/u/0/#inbox" className="text-success mx-1 text-decoration-none">@magi</a>  
           {user && ` | Logged in as: ${user.student.name} (${user.student.role})`}
         </Navbar.Text>
         <Navbar.Text className="text-white">
-          <a href="/about" className="text-white me-3">About</a>
-          <a href="/contact" className="text-white">Contact</a>
+          <a href="/about" className="text-primary me-3 text-decoration-none">About</a>
+          <a href="/contact" className="text-primary text-decoration-none">Contact</a>
         </Navbar.Text>
       </Container>
     </Navbar>
