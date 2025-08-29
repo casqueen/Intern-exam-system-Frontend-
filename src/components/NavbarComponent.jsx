@@ -20,19 +20,19 @@ const NavbarComponent = () => {
           <Nav className="ms-auto">
             {user ? (
               <>
-                {user.student.role === "admin" && (
+                {user?.student?.role === "admin" && (
                   <>
                     <Nav.Link as={Link} to="/students">Students</Nav.Link>
                     <Nav.Link as={Link} to="/exams">Exams</Nav.Link>
                   </>
                 )}
-                {user.student.role === "student" && (
+                {user?.student?.role === "student" && (
                   <>
                     <Nav.Link as={Link} to="/exams">Available Exams</Nav.Link>
                     <Nav.Link as={Link} to="/exam-list">My Exams</Nav.Link>
                   </>
                 )}
-                <Nav.Link as={Link} to="/dashboard" >Dashboard</Nav.Link>
+                <Nav.Link as={Link} to="/dashboard" className="text-warning">Dashboard</Nav.Link>
                 <Button variant="outline-light" onClick={handleLogout}>Logout</Button>
               </>
             ) : (

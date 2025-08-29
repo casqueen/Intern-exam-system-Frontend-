@@ -51,7 +51,7 @@ const CreateExam = () => {
             .min(2, "At least two options required"),
           correctAnswer: Yup.string().required("Correct answer is required").test(
             "valid-correct-answer",
-            "Correct answer must be one of the provided options",
+            "Correct answer must be one of the provided options.",
             function (value) {
               const { options } = this.parent;
               return options.includes(value);

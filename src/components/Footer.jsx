@@ -9,7 +9,7 @@ const Footer = () => {
       <Container>
         <Navbar.Text className="text-white">
           &copy; {new Date().getFullYear()} Built by <a href="https://mail.google.com/mail/u/0/#inbox" className="text-success mx-1 text-decoration-none">@magi</a>  
-          {user && ` | Logged in as: ${user?.student?.name} (${user?.student?.role})`}
+          {/* {user && ` | Logged in as: ${user?.student?.name} (${user?.student?.role})`} */}
         </Navbar.Text>
         <Navbar.Text className="text-white">
           <a href="/about" className="text-primary me-3 text-decoration-none">About</a>
