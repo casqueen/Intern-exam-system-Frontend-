@@ -23,9 +23,9 @@ const ExamList = () => {
 
   const fetchExams = async () => {
     try {
-      // UPDATED: Use /api/v2 endpoint
-      const response = await axios.get(`http://localhost:6000/api/v2/exams`, {
-        headers: { Authorization: `Bearer ${user.token}` },
+      // UPDATED: Use /api/v1 endpoint
+      const response = await axios.get(`http://localhost:8080/api/v1/exams`, {
+        headers: { Authorization: `Bearer ${user?.token}` },
       });
       setExams(response.data.exams);
     } catch (error) {
@@ -46,8 +46,8 @@ const ExamList = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`http://localhost:6000/api/v2/exams/${id}`, {
-            headers: { Authorization: `Bearer ${user.token}` },
+          const response = await axios.delete(`http://localhost:8080/api/v1/exams/${id}`, {
+            headers: { Authorization: `Bearer ${user?.token}` },
           });
           setExams(exams.filter((exam) => exam._id !== id));
           Swal.fire("Deleted!", response.data.message, "success");
@@ -66,7 +66,7 @@ const ExamList = () => {
             <h2 className="text-primary mb-4">📝 Exam List</h2>
           </Col>
           <Col sm={4} className="text-end">
-            {user?.student.role === "admin" && (
+            {user?.student?.role === "admin" && (
               <Button variant="primary" onClick={() => navigate("/exams/create")} className="me-3">
                 ➕ Create Exam
               </Button>
@@ -102,7 +102,7 @@ const ExamList = () => {
                   <td>{exam.title}</td>
                   <td>{new Date(exam.createdAt).toLocaleDateString()}</td>
                   <td>
-                    {user?.student.role === "admin" ? (
+                    {user?.student?.role === "admin" ? (
                       <>
                         <Button as={Link} to={`/exams/view/${exam._id}`} variant="info" className="me-2" size="sm">
                           👁 View

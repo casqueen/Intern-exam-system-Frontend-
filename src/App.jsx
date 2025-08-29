@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavbarComponent from "./components/NavbarComponent";
-import Footer from "./components/Footer"; 
 import Home from "./pages/Home";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
@@ -16,6 +15,7 @@ import TakeExam from "./pages/TakeExam";
 import Result from "./pages/Result";
 import ExamResults from "./pages/ExamResults";
 import StudentExamList from "./pages/StudentExamList";
+import Footer from "./components/Footer"; 
 
 function App() {
   return (

@@ -12,7 +12,7 @@ const ExamDetails = () => {
   const [exam, setExam] = useState(null);
 
   useEffect(() => {
-    if (!user || user.student.role !== "admin") {
+    if (!user || user?.student?.role !== "admin") {
       toast.error("Access denied. Admins only.");
       navigate("/dashboard");
       return;
@@ -22,8 +22,8 @@ const ExamDetails = () => {
 
   const fetchExam = async () => {
     try {
-      // UPDATED: Use /api/v2 endpoint
-      const response = await axios.get(`http://localhost:6000/api/v2/exams/${id}`, {
+      // UPDATED: Use /api/v1 endpoint
+      const response = await axios.get(`http://localhost:8080/api/v1/exams/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setExam(response.data);

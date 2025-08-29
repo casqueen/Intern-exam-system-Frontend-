@@ -13,7 +13,7 @@ const StudentList = () => {
   const { user } = useAuthStore();
 
   useEffect(() => {
-    if (!user || user.student.role !== "admin") {
+    if (!user || user?.student?.role !== "admin") {
       toast.error("Access denied. Admins only.");
       navigate("/dashboard");
       return;
@@ -23,8 +23,8 @@ const StudentList = () => {
 
   const fetchStudents = async () => {
     try {
-      // UPDATED: Use /api/v2 endpoint
-      const response = await axios.get(`http://localhost:6000/api/v2/admin?search=${search}`, {
+      // UPDATED: Use /api/v1 endpoint
+      const response = await axios.get(`http://localhost:8080/api/v1/admin?search=${search}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setStudents(response.data.students);
@@ -47,7 +47,7 @@ const StudentList = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.delete(`http://localhost:6000/api/v2/admin/student/${id}`, {
+          const response = await axios.delete(`http://localhost:8080/api/v1/admin/student/${id}`, {
             headers: { Authorization: `Bearer ${user.token}` },
           });
           setStudents(students.filter((student) => student._id !== id));
