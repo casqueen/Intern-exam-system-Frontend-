@@ -281,35 +281,25 @@
 // export default CreateExam;
 
 
-import { useState, useEffect } from "react";
-import { Container, Card, Button, TextField, Typography, Grid, Box, MenuItem, FormControl, InputLabel, Select, CircularProgress } from "@mui/material";
-import { Formik, Form, Field } from "formik";
+import { Container, Card, Button, TextField, Typography, Box, Autocomplete } from "@mui/material";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 import useAuthStore from "../store/authStore";
-import { motion } from "framer-motion"; // Added for animations
-import LoadingSpinner from "../components/LoadingSpinner"; // Assumed to exist
 
-/**
- * CreateExam Component
- * @description Allows admins to create or edit exams by selecting questions from the question bank
- */
 const CreateExam = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { user } = useAuthStore();
+  const [initialValues, setInitialValues] = useState({ title: "", questionIds: [] });
   const [isEditMode, setIsEditMode] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([]);
-  const [initialValues, setInitialValues] = useState({
-    title: "",
-    questionIds: [],
-  });
+  const { user } = useAuthStore();
 
   useEffect(() => {
-    if (!user || user?.student?.role !== "admin") {
+    if (!user) {
       toast.error("Access denied. Admins only.");
       navigate("/dashboard");
       return;
@@ -323,32 +313,23 @@ const CreateExam = () => {
 
   const fetchQuestions = async () => {
     try {
-      setLoading(true);
       const response = await axios.get("http://localhost:8080/api/v1/questions", {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setQuestions(response.data.questions);
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to fetch questions");
-    } finally {
-      setLoading(false);
+      // toast.error("Failed to fetch questions");
     }
   };
 
   const fetchExam = async () => {
     try {
-      setLoading(true);
       const response = await axios.get(`http://localhost:8080/api/v1/exams/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
-      setInitialValues({
-        title: response.data.title,
-        questionIds: response.data.questions.map((q) => q._id),
-      });
+      setInitialValues({ title: response.data.title, questionIds: response.data.questions.map(q => q._id) });
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to fetch exam");
-    } finally {
-      setLoading(false);
+      toast.error("Failed to fetch exam");
     }
   };
 
@@ -359,7 +340,6 @@ const CreateExam = () => {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      setLoading(true);
       const url = isEditMode ? `http://localhost:8080/api/v1/exams/${id}` : "http://localhost:8080/api/v1/exams";
       const method = isEditMode ? "put" : "post";
       const response = await axios[method](url, values, {
@@ -369,98 +349,70 @@ const CreateExam = () => {
       navigate("/exams");
     } catch (error) {
       toast.error(error.response?.data?.error || `Failed to ${isEditMode ? "update" : "create"} exam`);
-    } finally {
-      setLoading(false);
-      setSubmitting(false);
     }
+    setSubmitting(false);
   };
 
   return (
-    <Container sx={{ mt: 5, mb: 5 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }} role="form" aria-label={isEditMode ? "Edit Exam Form" : "Create Exam Form"}>
-          <Typography variant="h5" color="primary" align="center" gutterBottom>
-            {isEditMode ? "✏️ Edit Exam" : "➕ Create New Exam"}
-          </Typography>
-          {loading ? (
-            <LoadingSpinner />
-          ) : (
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-              enableReinitialize
-            >
-              {({ values, errors, touched, handleChange, handleBlur, isSubmitting }) => (
-                <Form>
+    <Container sx={{ mt: 5 }}>
+      <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
+        <Typography variant="h5" color="primary" align="center" gutterBottom>
+          {isEditMode ? "✏️ Edit Exam" : "➕ Create New Exam"}
+        </Typography>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          {({ values, errors, touched, setFieldValue, handleChange, handleBlur, isSubmitting }) => (
+            <Form>
+              <TextField
+                label="Exam Title"
+                name="title"
+                fullWidth
+                margin="normal"
+                value={values.title}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.title && Boolean(errors.title)}
+                helperText={touched.title && errors.title}
+              />
+              <Autocomplete
+                multiple
+                options={questions}
+                getOptionLabel={(option) => option.question}
+                value={questions.filter(q => values.questionIds.includes(q._id))}
+                onChange={(e, newValue) => setFieldValue("questionIds", newValue.map(v => v._id))}
+                renderInput={(params) => (
                   <TextField
-                    label="Exam Title"
-                    name="title"
-                    fullWidth
+                    {...params}
+                    label="Select Questions"
                     margin="normal"
-                    value={values.title}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.title && Boolean(errors.title)}
-                    helperText={touched.title && errors.title}
-                    aria-label="Exam Title"
+                    error={touched.questionIds && Boolean(errors.questionIds)}
+                    helperText={touched.questionIds && errors.questionIds}
                   />
-                  <FormControl fullWidth margin="normal">
-                    <InputLabel id="question-ids-label">Select Questions</InputLabel>
-                    <Field
-                      as={Select}
-                      name="questionIds"
-                      labelId="question-ids-label"
-                      multiple
-                      value={values.questionIds}
-                      onChange={handleChange}
-                      error={touched.questionIds && Boolean(errors.questionIds)}
-                      aria-label="Select Questions"
-                    >
-                      {questions.map((q) => (
-                        <MenuItem key={q._id} value={q._id}>
-                          {q.text} ({q.type})
-                        </MenuItem>
-                      ))}
-                    </Field>
-                    {touched.questionIds && errors.questionIds && (
-                      <Typography color="error" variant="caption">
-                        {errors.questionIds}
-                      </Typography>
-                    )}
-                  </FormControl>
-                  <Box sx={{ textAlign: "center", mt: 4 }}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="success"
-                      disabled={isSubmitting || loading}
-                      sx={{ mr: 2 }}
-                      aria-label={isEditMode ? "Update Exam" : "Create Exam"}
-                    >
-                      {isSubmitting || loading ? <CircularProgress size={24} /> : isEditMode ? "✅ Update Exam" : "✅ Create Exam"}
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => navigate("/exams")}
-                      aria-label="Cancel"
-                    >
-                      ⬅️ Cancel
-                    </Button>
-                  </Box>
-                </Form>
-              )}
-            </Formik>
+                )}
+              />
+              <Box sx={{ textAlign: "center", mt: 4 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="success"
+                  disabled={isSubmitting}
+                  sx={{ mr: 2 }}
+                >
+                  {isSubmitting ? "Submitting..." : isEditMode ? "✅ Update Exam" : "✅ Create Exam"}
+                </Button>
+                <Button variant="outlined" color="secondary" onClick={() => navigate("/exams")}>
+                  ⬅️ Cancel
+                </Button>
+              </Box>
+            </Form>
           )}
-        </Card>
-      </motion.div>
+        </Formik>
+      </Card>
     </Container>
   );
 };
-
 export default CreateExam;

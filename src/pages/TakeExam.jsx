@@ -125,226 +125,267 @@
 // export default TakeExam;
 
 
-
-
 import { useState, useEffect } from "react";
 import {
   Container,
   Card,
   Button,
   Typography,
-  Box,
+  List,
+  ListItem,
+  FormControlLabel,
   Radio,
   RadioGroup,
-  FormControlLabel,
   Checkbox,
+  Box,
   TextField,
-  Grid,
+  MenuItem,
+  Select,
   FormControl,
   InputLabel,
-  Select,
-  MenuItem,
-  CircularProgress,
 } from "@mui/material";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import useAuthStore from "../store/authStore";
-import LoadingSpinner from "../components/LoadingSpinner"; // Assumed to exist
-import { motion } from "framer-motion"; // Added for animations
 
-/**
- * TakeExam Component
- * @description Allows students to take an exam with support for all question types
- */
 const TakeExam = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const [step, setStep] = useState(1);
   const [exam, setExam] = useState(null);
-  const [answers, setAnswers] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [answers, setAnswers] = useState([]);
+  const [duration, setDuration] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [personalInfo, setPersonalInfo] = useState({ name: "", email: "" });
 
   useEffect(() => {
-    if (!user || user?.student?.role !== "student") {
-      toast.error("Access denied. Students only.");
-      navigate("/dashboard");
-      return;
-    }
     fetchExam();
-  }, [id, user, navigate]);
+  }, [id]);
+
+  useEffect(() => {
+    if (timeLeft > 0 && step === 3) {
+      const timer = setInterval(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearInterval(timer);
+    } else if (timeLeft === 0 && step === 3 && exam) {
+      handleSubmit();
+    }
+  }, [timeLeft, step, exam]);
 
   const fetchExam = async () => {
     try {
-      setLoading(true);
-      const response = await axios.get(`http://localhost:8080/api/v1/exams/${id}`, {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
+      const response = await axios.get(`http://localhost:8080/api/v1/exams/${id}`);
+      console.log("Fetched exam:", response.data); // Debug: Log exam data
       setExam(response.data);
-      setAnswers(
-        response.data.questions.reduce((acc, q) => {
-          acc[q._id] = q.type === "matching" ? [] : q.type === "mcq-multiple" ? [] : "";
-          return acc;
-        }, {})
-      );
+      setAnswers(response.data.questions.map((q) => ({ questionId: q._id, selectedOptions: [] })));
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to fetch exam");
-    } finally {
-      setLoading(false);
+      console.error("Error fetching exam:", error);
+      toast.error(error.response?.data?.error || "Failed to fetch exam. Please check if the exam exists.");
+      navigate("/exams");
     }
   };
 
-  const handleAnswerChange = (questionId, value) => {
-    setAnswers({ ...answers, [questionId]: value });
-  };
-
-  const handleMatchingAnswer = (questionId, left, right) => {
-    const currentMatches = answers[questionId] || [];
-    const updatedMatches = [...currentMatches, { left, right }];
-    setAnswers({ ...answers, [questionId]: updatedMatches });
+  const handleAnswerChange = (questionId, value, type) => {
+    setAnswers((prev) =>
+      prev.map((a) => {
+        if (a.questionId !== questionId) return a;
+        if (type === "single") return { ...a, selectedOptions: [value] };
+        const newSelected = a.selectedOptions.includes(value)
+          ? a.selectedOptions.filter((v) => v !== value)
+          : [...a.selectedOptions, value];
+        return { ...a, selectedOptions: newSelected };
+      })
+    );
   };
 
   const handleSubmit = async () => {
+    if (answers.some((a) => a.selectedOptions.length === 0)) {
+      toast.error("Please answer all questions before submitting.");
+      return;
+    }
     try {
-      setSubmitting(true);
-      const formattedAnswers = Object.keys(answers).map((questionId) => ({
-        questionId,
-        selected: answers[questionId],
-      }));
-      const response = await axios.post(
-        `http://localhost:8080/api/v1/student/exams/${id}/submit`,
-        { answers: formattedAnswers },
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
+      const response = await axios.post(`http://localhost:8080/api/v1/student/exams/${id}/submit`, {
+        name: personalInfo.name,
+        email: personalInfo.email,
+        answers,
+      });
       toast.success(response.data.message);
-      navigate(`/results/${id}`);
+      navigate(`/result/${response.data.resultId}`);
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to submit exam");
-    } finally {
-      setSubmitting(false);
+      console.error("Error submitting exam:", error);
+      toast.error(error.response?.data?.error || "Failed to submit exam. Please try again.");
     }
   };
 
-  return (
-    <Container sx={{ mt: 5, mb: 5 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }} role="form" aria-label="Take Exam Form">
+  const personalValidation = Yup.object().shape({
+    name: Yup.string().required("Name is required").min(2, "Name must be at least 2 characters"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
+  });
+
+  if (step === 1) {
+    return (
+      <Container sx={{ mt: 5 }}>
+        <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
           <Typography variant="h5" color="primary" gutterBottom>
-            🎯 Take Exam: {exam?.title}
+            Enter Personal Information
           </Typography>
-          {loading ? (
-            <LoadingSpinner />
-          ) : exam ? (
-            <>
-              {exam.questions.map((question, index) => (
-                <Box key={question._id} sx={{ mb: 4 }} role="group" aria-label={`Question ${index + 1}`}>
-                  <Typography variant="h6">
-                    Question {index + 1}: {question.text}
-                  </Typography>
-                  {question.image && (
-                    <Box sx={{ my: 2 }}>
-                      <img
-                        src={`http://localhost:8080${question.image}`}
-                        alt={`Question ${index + 1} image`}
-                        style={{ maxWidth: "200px" }}
-                        aria-label={`Image for question ${index + 1}`}
-                      />
-                    </Box>
-                  )}
-                  {question.type === "mcq-single" || question.type === "true-false" ? (
-                    <RadioGroup
-                      value={answers[question._id] || ""}
-                      onChange={(e) => handleAnswerChange(question._id, e.target.value)}
-                      aria-label={`Answer options for question ${index + 1}`}
-                    >
-                      {question.options.map((option, i) => (
-                        <FormControlLabel
-                          key={i}
-                          value={option}
-                          control={<Radio />}
-                          label={option}
-                          aria-label={`Option ${i + 1}: ${option}`}
-                        />
-                      ))}
-                    </RadioGroup>
-                  ) : question.type === "mcq-multiple" ? (
-                    <Box>
-                      {question.options.map((option, i) => (
-                        <FormControlLabel
-                          key={i}
-                          control={
-                            <Checkbox
-                              checked={answers[question._id]?.includes(option) || false}
-                              onChange={(e) => {
-                                const current = answers[question._id] || [];
-                                const updated = e.target.checked
-                                  ? [...current, option]
-                                  : current.filter((o) => o !== option);
-                                handleAnswerChange(question._id, updated);
-                              }}
-                              aria-label={`Option ${i + 1}: ${option}`}
-                            />
-                          }
-                          label={option}
-                        />
-                      ))}
-                    </Box>
-                  ) : question.type === "fill-blank" || question.type === "short-answer" ? (
-                    <TextField
-                      label="Your Answer"
-                      value={answers[question._id] || ""}
-                      onChange={(e) => handleAnswerChange(question._id, e.target.value)}
-                      fullWidth
-                      margin="normal"
-                      aria-label={`Answer for question ${index + 1}`}
-                    />
-                  ) : question.type === "matching" ? (
-                    <Grid container spacing={2}>
-                      {question.matchingLeft.map((left, i) => (
-                        <Grid item xs={12} sm={6} key={i}>
-                          <FormControl fullWidth margin="normal">
-                            <InputLabel id={`match-${i}-label`}>{left}</InputLabel>
-                            <Select
-                              labelId={`match-${i}-label`}
-                              label={left}
-                              onChange={(e) => handleMatchingAnswer(question._id, left, e.target.value)}
-                              aria-label={`Select match for ${left}`}
-                            >
-                              {question.matchingRight.map((right, j) => (
-                                <MenuItem key={j} value={right}>
-                                  {right}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  ) : null}
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Please provide your name and email to start the exam.
+          </Typography>
+          <Formik
+            initialValues={{ name: "", email: "" }}
+            validationSchema={personalValidation}
+            onSubmit={(values) => {
+              setPersonalInfo(values);
+              setStep(2);
+            }}
+          >
+            {({ isSubmitting }) => (
+              <Form>
+                <Field
+                  name="name"
+                  as={TextField}
+                  label="Name"
+                  fullWidth
+                  margin="normal"
+                  helperText={<ErrorMessage name="name" />}
+                  error={Boolean(<ErrorMessage name="name" />)}
+                  aria-label="Student Name"
+                />
+                <Field
+                  name="email"
+                  as={TextField}
+                  label="Email"
+                  fullWidth
+                  margin="normal"
+                  helperText={<ErrorMessage name="email" />}
+                  error={Boolean(<ErrorMessage name="email" />)}
+                  aria-label="Student Email"
+                />
+                <Box sx={{ mt: 2 }}>
+                  <Button type="submit" variant="contained" color="primary" disabled={isSubmitting} sx={{ mr: 2 }}>
+                    Next
+                  </Button>
+                  <Button variant="outlined" color="secondary" onClick={() => navigate("/exams")}>
+                    Cancel
+                  </Button>
                 </Box>
-              ))}
-              <Box sx={{ textAlign: "center", mt: 4 }}>
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={handleSubmit}
-                  disabled={submitting}
-                  aria-label="Submit Exam"
-                >
-                  {submitting ? <CircularProgress size={24} /> : "✅ Submit Exam"}
-                </Button>
-              </Box>
-            </>
-          ) : (
-            <Typography aria-label="Error message">Failed to load exam</Typography>
-          )}
+              </Form>
+            )}
+          </Formik>
         </Card>
-      </motion.div>
+      </Container>
+    );
+  }
+
+  if (step === 2) {
+    return (
+      <Container sx={{ mt: 5 }}>
+        <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
+          <Typography variant="h5" color="primary" gutterBottom>
+            Select Exam Duration
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Choose how much time you need for the exam.
+          </Typography>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Duration (minutes)</InputLabel>
+            <Select value={duration} onChange={(e) => setDuration(e.target.value)} aria-label="Exam Duration">
+              <MenuItem value={30}>30</MenuItem>
+              <MenuItem value={60}>60</MenuItem>
+              <MenuItem value={90}>90</MenuItem>
+            </Select>
+          </FormControl>
+          <Box sx={{ mt: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                setTimeLeft(duration * 60);
+                setStep(3);
+              }}
+            >
+              Start Exam
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={() => setStep(1)} sx={{ ml: 2 }}>
+              Back
+            </Button>
+          </Box>
+        </Card>
+      </Container>
+    );
+  }
+
+  return (
+    <Container sx={{ mt: 5 }}>
+      <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
+        <Typography variant="h5" color="primary" gutterBottom>
+          🎯 Take Exam: {exam?.title || "Loading..."}
+        </Typography>
+        <Typography variant="h6" aria-live="polite">
+          Time Left: {Math.floor(timeLeft / 60)}:{timeLeft % 60 < 10 ? "0" : ""}
+          {timeLeft % 60}
+        </Typography>
+        {exam ? (
+          <>
+            <List>
+              {exam.questions.map((question, index) => (
+                <ListItem key={question._id}>
+                  <Box>
+                    <Typography variant="h6">
+                      Question {index + 1}: {question.question}
+                    </Typography>
+                    {question.type === "single" ? (
+                      <RadioGroup
+                        value={answers.find((a) => a.questionId === question._id)?.selectedOptions[0] || ""}
+                        onChange={(e) => handleAnswerChange(question._id, e.target.value, "single")}
+                        aria-label={`Question ${index + 1} options`}
+                      >
+                        {question.options.map((option, optIndex) => (
+                          <FormControlLabel
+                            key={optIndex}
+                            value={option}
+                            control={<Radio />}
+                            label={option}
+                          />
+                        ))}
+                      </RadioGroup>
+                    ) : (
+                      <Box>
+                        {question.options.map((option, optIndex) => (
+                          <FormControlLabel
+                            key={optIndex}
+                            control={
+                              <Checkbox
+                                checked={answers
+                                  .find((a) => a.questionId === question._id)
+                                  ?.selectedOptions.includes(option)}
+                                onChange={() => handleAnswerChange(question._id, option, "multiple")}
+                              />
+                            }
+                            label={option}
+                          />
+                        ))}
+                      </Box>
+                    )}
+                  </Box>
+                </ListItem>
+              ))}
+            </List>
+            <Box sx={{ textAlign: "center", mt: 4 }}>
+              <Button variant="contained" color="success" onClick={handleSubmit} sx={{ mr: 2 }}>
+                ✅ Submit Exam
+              </Button>
+              <Button variant="outlined" color="secondary" onClick={() => navigate("/exams")}>
+                ⬅️ Cancel
+              </Button>
+            </Box>
+          </>
+        ) : (
+          <Typography>Loading exam...</Typography>
+        )}
+      </Card>
     </Container>
   );
 };
