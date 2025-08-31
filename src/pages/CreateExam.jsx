@@ -1,13 +1,13 @@
-import { Container, Card, Button, TextField, Typography, Grid, IconButton } from "@mui/material";
-import { Formik, Field, Form as FormikForm, FieldArray, ErrorMessage } from "formik";
+import { Container, Card, Button, TextField, Typography, Grid, IconButton, Box } from "@mui/material";
+import { Formik, Form, Field, FieldArray } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import useAuthStore from "../store/authStore";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import DeleteIcon from '@mui/icons-material/Delete';
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const CreateExam = () => {
   const navigate = useNavigate();
@@ -29,9 +29,10 @@ const CreateExam = () => {
       setIsEditMode(true);
       const fetchExam = async () => {
         try {
-          const response = await axios.get(`http://localhost:8080/api/v1/exams/${id}`, {
-            headers: { Authorization: `Bearer ${user.token}` },
-          });
+          const response = await axios.get(
+            `http://localhost:8080/api/v1/exams/${id}`,
+            { headers: { Authorization: `Bearer ${user.token}` } }
+          );
           setInitialValues(response.data);
         } catch (error) {
           toast.error(error.response?.data?.error || "Failed to fetch exam");
@@ -50,14 +51,16 @@ const CreateExam = () => {
           options: Yup.array()
             .of(Yup.string().required("Option is required"))
             .min(2, "At least two options required"),
-          correctAnswer: Yup.string().required("Correct answer is required").test(
-            "valid-correct-answer",
-            "Correct answer must be one of the provided options.",
-            function (value) {
-              const { options } = this.parent;
-              return options.includes(value);
-            }
-          ),
+          correctAnswer: Yup.string()
+            .required("Correct answer is required")
+            .test(
+              "valid-correct-answer",
+              "Correct answer must be one of the provided options.",
+              function (value) {
+                const { options } = this.parent;
+                return options.includes(value);
+              }
+            ),
         })
       )
       .min(1, "At least one question is required"),
@@ -75,7 +78,10 @@ const CreateExam = () => {
       toast.success(response.data.message);
       navigate("/exams");
     } catch (error) {
-      toast.error(error.response?.data?.error || `Failed to ${isEditMode ? "update" : "create"} exam`);
+      toast.error(
+        error.response?.data?.error ||
+          `Failed to ${isEditMode ? "update" : "create"} exam`
+      );
     }
     setSubmitting(false);
   };
@@ -86,61 +92,88 @@ const CreateExam = () => {
         <Typography variant="h5" color="primary" align="center" gutterBottom>
           {isEditMode ? "✏️ Edit Exam" : "➕ Create New Exam"}
         </Typography>
+
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
           enableReinitialize
         >
-          {({ values, setFieldValue, isSubmitting }) => (
-            <FormikForm>
+          {({ values, errors, touched, handleChange, handleBlur, isSubmitting }) => (
+            <Form>
+              {/* Exam Title */}
               <TextField
                 label="Exam Title"
                 name="title"
                 fullWidth
                 margin="normal"
-                as={Field}
-                helperText={<ErrorMessage name="title" component="div" />}
-                error={Boolean(ErrorMessage.name === "title")}
-                aria-label="Exam Title"
+                value={values.title}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.title && Boolean(errors.title)}
+                helperText={touched.title && errors.title}
               />
+
+              {/* Questions */}
               <FieldArray name="questions">
                 {({ push, remove }) => (
                   <>
                     {values.questions.map((q, qIndex) => (
-                      <Card key={qIndex} sx={{ mb: 4, p: 3, boxShadow: 1, borderRadius: 2 }}>
-                        <Grid container spacing={2}>
-                          <Grid item xs={12}>
-                            <TextField
-                              label={`Question ${qIndex + 1}`}
-                              name={`questions.${qIndex}.question`}
-                              fullWidth
-                              margin="normal"
-                              as={Field}
-                              helperText={<ErrorMessage name={`questions.${qIndex}.question`} component="div" />}
-                              error={Boolean(ErrorMessage.name === `questions.${qIndex}.question`)}
-                              aria-label={`Question ${qIndex + 1}`}
-                            />
-                          </Grid>
-                        </Grid>
+                      <Card
+                        key={qIndex}
+                        sx={{ mb: 4, p: 3, boxShadow: 1, borderRadius: 2 }}
+                      >
+                        {/* Question */}
+                        <TextField
+                          label={`Question ${qIndex + 1}`}
+                          name={`questions.${qIndex}.question`}
+                          fullWidth
+                          margin="normal"
+                          value={q.question}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          error={
+                            touched.questions?.[qIndex]?.question &&
+                            Boolean(errors.questions?.[qIndex]?.question)
+                          }
+                          helperText={
+                            touched.questions?.[qIndex]?.question &&
+                            errors.questions?.[qIndex]?.question
+                          }
+                        />
+
+                        {/* Options */}
                         <FieldArray name={`questions.${qIndex}.options`}>
                           {({ push: pushOption, remove: removeOption }) => (
                             <>
-                              {values.questions[qIndex].options.map((opt, optIndex) => (
-                                <Grid container spacing={2} key={optIndex} alignItems="center" sx={{ mt: 1 }}>
+                              {q.options.map((opt, optIndex) => (
+                                <Grid
+                                  container
+                                  spacing={2}
+                                  key={optIndex}
+                                  alignItems="center"
+                                  sx={{ mt: 1 }}
+                                >
                                   <Grid item xs={10}>
                                     <TextField
                                       label={`Option ${optIndex + 1}`}
                                       name={`questions.${qIndex}.options.${optIndex}`}
                                       fullWidth
                                       margin="normal"
-                                      as={Field}
-                                      helperText={<ErrorMessage name={`questions.${qIndex}.options.${optIndex}`} component="div" />}
-                                      error={Boolean(ErrorMessage.name === `questions.${qIndex}.options.${optIndex}`)}
-                                      aria-label={`Option ${optIndex + 1}`}
+                                      value={opt}
+                                      onChange={handleChange}
+                                      onBlur={handleBlur}
+                                      error={
+                                        touched.questions?.[qIndex]?.options?.[optIndex] &&
+                                        Boolean(errors.questions?.[qIndex]?.options?.[optIndex])
+                                      }
+                                      helperText={
+                                        touched.questions?.[qIndex]?.options?.[optIndex] &&
+                                        errors.questions?.[qIndex]?.options?.[optIndex]
+                                      }
                                     />
                                   </Grid>
-                                  {values.questions[qIndex].options.length > 2 && (
+                                  {q.options.length > 2 && (
                                     <Grid item xs={2}>
                                       <IconButton
                                         color="error"
@@ -159,7 +192,6 @@ const CreateExam = () => {
                                   color="success"
                                   onClick={() => pushOption("")}
                                   startIcon={<AddCircleOutlineIcon />}
-                                  aria-label="Add Option"
                                 >
                                   Add Option
                                 </Button>
@@ -167,24 +199,34 @@ const CreateExam = () => {
                             </>
                           )}
                         </FieldArray>
+
+                        {/* Correct Answer */}
                         <TextField
                           label="Correct Answer"
                           name={`questions.${qIndex}.correctAnswer`}
                           fullWidth
                           margin="normal"
-                          as={Field}
-                          helperText={<ErrorMessage name={`questions.${qIndex}.correctAnswer`} component="div" />}
-                          error={Boolean(ErrorMessage.name === `questions.${qIndex}.correctAnswer`)}
-                          aria-label="Correct Answer"
+                          value={q.correctAnswer}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          error={
+                            touched.questions?.[qIndex]?.correctAnswer &&
+                            Boolean(errors.questions?.[qIndex]?.correctAnswer)
+                          }
+                          helperText={
+                            touched.questions?.[qIndex]?.correctAnswer &&
+                            errors.questions?.[qIndex]?.correctAnswer
+                          }
                           sx={{ mt: 3 }}
                         />
+
+                        {/* Remove Question */}
                         <Grid item xs={12} sx={{ mt: 2 }}>
                           <Button
                             variant="outlined"
                             color="error"
                             onClick={() => remove(qIndex)}
                             disabled={values.questions.length === 1}
-                            aria-label="Remove Question"
                           >
                             Remove Question
                           </Button>
@@ -194,36 +236,41 @@ const CreateExam = () => {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => push({ question: "", options: ["", ""], correctAnswer: "" })}
+                      onClick={() =>
+                        push({ question: "", options: ["", ""], correctAnswer: "" })
+                      }
                       startIcon={<AddCircleOutlineIcon />}
-                      aria-label="Add Question"
                     >
                       Add Question
                     </Button>
                   </>
                 )}
               </FieldArray>
-              <Box sx={{ textAlign: 'center', mt: 4 }}>
+
+              {/* Submit & Cancel */}
+              <Box sx={{ textAlign: "center", mt: 4 }}>
                 <Button
                   type="submit"
                   variant="contained"
                   color="success"
                   disabled={isSubmitting}
                   sx={{ mr: 2 }}
-                  aria-label={isEditMode ? "Update Exam" : "Create Exam"}
                 >
-                  {isSubmitting ? "Submitting..." : isEditMode ? "✅ Update Exam" : "✅ Create Exam"}
+                  {isSubmitting
+                    ? "Submitting..."
+                    : isEditMode
+                    ? "✅ Update Exam"
+                    : "✅ Create Exam"}
                 </Button>
                 <Button
                   variant="outlined"
                   color="secondary"
                   onClick={() => navigate("/exams")}
-                  aria-label="Cancel"
                 >
                   ⬅️ Cancel
                 </Button>
               </Box>
-            </FormikForm>
+            </Form>
           )}
         </Formik>
       </Card>

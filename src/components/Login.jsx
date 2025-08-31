@@ -1,5 +1,5 @@
-import { Container, Card, Button, TextField, Typography, MenuItem, FormControl, InputLabel, Select } from "@mui/material";
-import { Formik, Field, Form as FormikForm, ErrorMessage } from "formik";
+import { Container, Card, Button, TextField, Typography, MenuItem, FormControl, InputLabel, Select, FormHelperText } from "@mui/material";
+import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -36,8 +36,8 @@ const Login = () => {
   };
 
   return (
-    <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 5 }}>
-      <Card sx={{ p: 4, boxShadow: 3, width: '100%', maxWidth: 400, borderRadius: 2 }}>
+    <Container sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 5 }}>
+      <Card sx={{ p: 4, boxShadow: 3, width: "100%", maxWidth: 400, borderRadius: 2 }}>
         <Typography variant="h5" align="center" gutterBottom>
           🔑 Login
         </Typography>
@@ -47,43 +47,49 @@ const Login = () => {
           onSubmit={handleLogin}
         >
           {({ isSubmitting, values, handleChange }) => (
-            <FormikForm>
-              <TextField
-                label="Email"
+            <Form>
+              {/* Email Field */}
+              <Field
                 name="email"
+                as={TextField}
+                label="Email"
                 fullWidth
                 margin="normal"
-                as={Field}
-                helperText={<ErrorMessage name="email" component="div" />}
-                error={Boolean(ErrorMessage.name === "email")}
-                aria-label="Email"
+                helperText={<ErrorMessage name="email" />}
+                error={Boolean(<ErrorMessage name="email" />)}
               />
-              <TextField
-                label="Password"
+
+              {/* Password Field */}
+              <Field
                 name="password"
+                as={TextField}
                 type="password"
+                label="Password"
                 fullWidth
                 margin="normal"
-                as={Field}
-                helperText={<ErrorMessage name="password" component="div" />}
-                error={Boolean(ErrorMessage.name === "password")}
-                aria-label="Password"
+                helperText={<ErrorMessage name="password" />}
+                error={Boolean(<ErrorMessage name="password" />)}
               />
+
+              {/* Role Select */}
               <FormControl fullWidth margin="normal">
                 <InputLabel>Role</InputLabel>
                 <Field
-                  as={Select}
                   name="role"
-                  label="Role"
-                  onChange={handleChange}
+                  as={Select}
                   value={values.role}
-                  aria-label="Role"
+                  onChange={handleChange}
+                  label="Role"
                 >
                   <MenuItem value="admin">Admin</MenuItem>
                   <MenuItem value="student">Student</MenuItem>
                 </Field>
-                <ErrorMessage name="role" component="div" sx={{ color: 'error.main', fontSize: '0.75rem', mt: 0.5 }} />
+                <FormHelperText>
+                  <ErrorMessage name="role" />
+                </FormHelperText>
               </FormControl>
+
+              {/* Submit Button */}
               <Button
                 type="submit"
                 variant="contained"
@@ -91,11 +97,10 @@ const Login = () => {
                 fullWidth
                 disabled={isSubmitting}
                 sx={{ mt: 2 }}
-                aria-label="Login"
               >
                 {isSubmitting ? "Logging in..." : "Login"}
               </Button>
-            </FormikForm>
+            </Form>
           )}
         </Formik>
       </Card>
