@@ -1,51 +1,120 @@
+// import { Container, Button, Card, Typography, Box } from "@mui/material";
+// import { useNavigate } from "react-router-dom";
+// import useAuthStore from "../store/authStore";
+
+// const Home = () => {
+//   const navigate = useNavigate();
+//   const { user } = useAuthStore();
+
+//   return (
+//     <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 5 }}>
+//       <Card sx={{ p: 4, boxShadow: 3, maxWidth: 600, width: '100%', borderRadius: 2, textAlign: 'center' }}>
+//         <Typography variant="h4" color="primary" gutterBottom>
+//           Welcome to Exam Management System
+//         </Typography>
+//         <Typography variant="body1" sx={{ mb: 4 }}>
+//           Manage and take exams with ease. Admins can create exams and manage students, while students can take exams and view results.
+//         </Typography>
+//         {user ? (
+//           <Button
+//             variant="contained"
+//             color="primary"
+//             onClick={() => navigate("/dashboard")}
+//             aria-label="Go to Dashboard"
+//           >
+//             Go to Dashboard
+//           </Button>
+//         ) : (
+//           <Box>
+//             <Button
+//               variant="contained"
+//               color="success"
+//               onClick={() => navigate("/login")}
+//               sx={{ mr: 2 }}
+//               aria-label="Login"
+//             >
+//               Login
+//             </Button>
+//             <Button
+//               variant="contained"
+//               color="success"
+//               onClick={() => navigate("/register")}
+//               aria-label="Register"
+//             >
+//               Register
+//             </Button>
+//           </Box>
+//         )}
+//       </Card>
+//     </Container>
+//   );
+// };
+
+// export default Home;
+
 import { Container, Button, Card, Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
+import { motion } from "framer-motion"; // Added for animations
 
+/**
+ * Home Component
+ * @description Displays welcome page with navigation options
+ */
 const Home = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
 
   return (
-    <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 5 }}>
-      <Card sx={{ p: 4, boxShadow: 3, maxWidth: 600, width: '100%', borderRadius: 2, textAlign: 'center' }}>
-        <Typography variant="h4" color="primary" gutterBottom>
-          Welcome to Exam Management System
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 4 }}>
-          Manage and take exams with ease. Admins can create exams and manage students, while students can take exams and view results.
-        </Typography>
-        {user ? (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate("/dashboard")}
-            aria-label="Go to Dashboard"
-          >
-            Go to Dashboard
-          </Button>
-        ) : (
-          <Box>
+    <Container sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 5, mb: 5 }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card
+          sx={{ p: 4, boxShadow: 3, maxWidth: 600, width: "100%", borderRadius: 2, textAlign: "center" }}
+          role="main"
+          aria-label="Welcome Section"
+        >
+          <Typography variant="h4" color="primary" gutterBottom>
+            Welcome to Exam Management System
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 4 }}>
+            Manage and take exams with ease. Admins can create exams and manage students, while students can take exams and view results.
+          </Typography>
+          {user ? (
             <Button
               variant="contained"
-              color="success"
-              onClick={() => navigate("/login")}
-              sx={{ mr: 2 }}
-              aria-label="Login"
+              color="primary"
+              onClick={() => navigate("/dashboard")}
+              aria-label="Go to Dashboard"
             >
-              Login
+              Go to Dashboard
             </Button>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => navigate("/register")}
-              aria-label="Register"
-            >
-              Register
-            </Button>
-          </Box>
-        )}
-      </Card>
+          ) : (
+            <Box>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => navigate("/login")}
+                sx={{ mr: 2 }}
+                aria-label="Login"
+              >
+                Login
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => navigate("/register")}
+                aria-label="Register"
+              >
+                Register
+              </Button>
+            </Box>
+          )}
+        </Card>
+      </motion.div>
     </Container>
   );
 };
