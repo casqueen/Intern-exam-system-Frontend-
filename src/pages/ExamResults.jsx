@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Table, Button, Card } from "react-bootstrap";
+import { Container, Card, Button, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -18,11 +18,10 @@ const ExamResults = () => {
       return;
     }
     fetchResults();
-  }, [examId]);
+  }, [examId, user, navigate]);
 
   const fetchResults = async () => {
     try {
-      // UPDATED: Use /api/v1 endpoint
       const response = await axios.get(`http://localhost:8080/api/v1/admin/exam-results/${examId}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
@@ -33,40 +32,49 @@ const ExamResults = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <Card className="shadow-lg p-4">
-        <h2 className="text-primary mb-4">📊 Exam Results</h2>
-        <Table striped bordered hover responsive className="text-center">
-          <thead className="bg-primary text-white">
-            <tr>
-              <th>#</th>
-              <th>Student Name</th>
-              <th>Email</th>
-              <th>Exam Title</th>
-              <th>Score</th>
-              <th>Status</th>
-              <th>Exam Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((result, index) => (
-              <tr key={result.studentId}>
-                <td>{index + 1}</td>
-                <td>{result.name}</td>
-                <td>{result.email}</td>
-                <td>{result.examTitle}</td>
-                <td>{result.score}</td>
-                <td>{result.passed}</td>
-                <td>{result.examDate}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <div className="mt-4">
-          <Button variant="secondary" onClick={() => navigate("/exams")}>
+    <Container sx={{ mt: 5 }}>
+      <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
+        <Typography variant="h5" color="primary" gutterBottom>
+          📊 Exam Results
+        </Typography>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: 'primary.main' }}>
+                <TableCell sx={{ color: 'white' }}>#</TableCell>
+                <TableCell sx={{ color: 'white' }}>Student Name</TableCell>
+                <TableCell sx={{ color: 'white' }}>Email</TableCell>
+                <TableCell sx={{ color: 'white' }}>Exam Title</TableCell>
+                <TableCell sx={{ color: 'white' }}>Score</TableCell>
+                <TableCell sx={{ color: 'white' }}>Status</TableCell>
+                <TableCell sx={{ color: 'white' }}>Exam Date</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {results.map((result, index) => (
+                <TableRow key={result.studentId}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{result.name}</TableCell>
+                  <TableCell>{result.email}</TableCell>
+                  <TableCell>{result.examTitle}</TableCell>
+                  <TableCell>{result.score}</TableCell>
+                  <TableCell>{result.passed}</TableCell>
+                  <TableCell>{result.examDate}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Box sx={{ mt: 4 }}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => navigate("/exams")}
+            aria-label="Back"
+          >
             ⬅️ Back
           </Button>
-        </div>
+        </Box>
       </Card>
     </Container>
   );

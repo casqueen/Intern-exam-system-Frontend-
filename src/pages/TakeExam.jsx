@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Form, Button, Card, ListGroup } from "react-bootstrap";
+import { Container, Card, Button, Typography, List, ListItem, FormControlLabel, Radio, RadioGroup, Box } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -12,18 +12,17 @@ const TakeExam = () => {
   const [exam, setExam] = useState(null);
   const [answers, setAnswers] = useState([]);
 
-//   useEffect(() => {
-//     if (!user || user?.student?.role !== "student") {
-//       toast.error("Access denied. Students only.");
-//       navigate("/dashboard");
-//       return;
-//     }
-//     fetchExam();
-//   }, [id]);
+  useEffect(() => {
+    if (!user || user?.student?.role !== "student") {
+      toast.error("Access denied. Students only.");
+      navigate("/dashboard");
+      return;
+    }
+    fetchExam();
+  }, [id, user, navigate]);
 
   const fetchExam = async () => {
     try {
-      // UPDATED: Use /api/v1 endpoint
       const response = await axios.get(`http://localhost:8080/api/v1/exams/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
@@ -51,7 +50,6 @@ const TakeExam = () => {
       return;
     }
     try {
-      // UPDATED: Use /api/v1 endpoint
       const response = await axios.post(
         `http://localhost:8080/api/v1/student/exams/${id}/submit`,
         { studentId: user?.student?._id, answers },
@@ -65,42 +63,59 @@ const TakeExam = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <Card className="shadow-lg p-4">
-        <h2 className="text-primary mb-4">🎯 Take Exam: {exam?.title}</h2>
+    <Container sx={{ mt: 5 }}>
+      <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
+        <Typography variant="h5" color="primary" gutterBottom>
+          🎯 Take Exam: {exam?.title}
+        </Typography>
         {exam ? (
           <>
-            <ListGroup>
+            <List>
               {exam.questions.map((question, index) => (
-                <ListGroup.Item key={question._id}>
-                  <h5>Question {index + 1}: {question.question}</h5>
-                  <Form>
-                    {question.options.map((option, optIndex) => (
-                      <Form.Check
-                        key={optIndex}
-                        type="radio"
-                        label={option}
-                        name={`question-${question._id}`}
-                        value={option}
-                        checked={answers.find((a) => a.questionId === question._id)?.selectedOption === option}
-                        onChange={() => handleAnswerChange(question._id, option)}
-                      />
-                    ))}
-                  </Form>
-                </ListGroup.Item>
+                <ListItem key={question._id}>
+                  <Box>
+                    <Typography variant="h6">Question {index + 1}: {question.question}</Typography>
+                    <RadioGroup
+                      name={`question-${question._id}`}
+                      value={answers.find((a) => a.questionId === question._id)?.selectedOption || ""}
+                      onChange={(e) => handleAnswerChange(question._id, e.target.value)}
+                    >
+                      {question.options.map((option, optIndex) => (
+                        <FormControlLabel
+                          key={optIndex}
+                          value={option}
+                          control={<Radio />}
+                          label={option}
+                          aria-label={`Option ${optIndex + 1}`}
+                        />
+                      ))}
+                    </RadioGroup>
+                  </Box>
+                </ListItem>
               ))}
-            </ListGroup>
-            <div className="mt-4 text-center">
-              <Button variant="success" onClick={handleSubmit}>
+            </List>
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleSubmit}
+                sx={{ mr: 2 }}
+                aria-label="Submit Exam"
+              >
                 ✅ Submit Exam
               </Button>
-              <Button variant="secondary" className="ms-3" onClick={() => navigate("/exams")}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/exams")}
+                aria-label="Cancel"
+              >
                 ⬅️ Cancel
               </Button>
-            </div>
+            </Box>
           </>
         ) : (
-          <p>Loading...</p>
+          <Typography>Loading...</Typography>
         )}
       </Card>
     </Container>

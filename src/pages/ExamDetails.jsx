@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Container, Card, ListGroup, Button } from "react-bootstrap";
-import { useParams, useNavigate } from "react-router-dom";
+import { Container, Card, List, ListItem, ListItemText, Button, Typography, Box } from "@mui/material";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import useAuthStore from "../store/authStore";
@@ -18,11 +18,10 @@ const ExamDetails = () => {
       return;
     }
     fetchExam();
-  }, [id]);
+  }, [id, user, navigate]);
 
   const fetchExam = async () => {
     try {
-      // UPDATED: Use /api/v1 endpoint
       const response = await axios.get(`http://localhost:8080/api/v1/exams/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
@@ -33,36 +32,56 @@ const ExamDetails = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <Card className="shadow-lg p-4">
-        <h2 className="text-primary mb-4">📋 Exam Details</h2>
+    <Container sx={{ mt: 5 }}>
+      <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
+        <Typography variant="h5" color="primary" gutterBottom>
+          📋 Exam Details
+        </Typography>
         {exam ? (
           <>
-            <h4>{exam.title}</h4>
-            <p>Created: {new Date(exam.createdAt).toLocaleDateString()}</p>
-            <h5>Questions:</h5>
-            <ListGroup>
+            <Typography variant="h6">{exam.title}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Created: {new Date(exam.createdAt).toLocaleDateString()}
+            </Typography>
+            <Typography variant="h6" sx={{ mt: 2 }}>Questions:</Typography>
+            <List>
               {exam.questions.map((q, index) => (
-                <ListGroup.Item key={q._id}>
-                  <strong>Question {index + 1}:</strong> {q.question}
-                  <br />
-                  <strong>Options:</strong> {q.options.join(", ")}
-                  <br />
-                  <strong>Correct Answer:</strong> {q.correctAnswer}
-                </ListGroup.Item>
+                <ListItem key={q._id} sx={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <ListItemText
+                    primary={`Question ${index + 1}: ${q.question}`}
+                    secondary={
+                      <>
+                        <Typography variant="body2">Options: {q.options.join(", ")}</Typography>
+                        <Typography variant="body2">Correct Answer: {q.correctAnswer}</Typography>
+                      </>
+                    }
+                  />
+                </ListItem>
               ))}
-            </ListGroup>
-            <div className="mt-4">
-              <Button variant="primary" as={Link} to={`/exams/edit/${exam._id}`} className="me-2">
+            </List>
+            <Box sx={{ mt: 4 }}>
+              <Button
+                component={Link}
+                to={`/exams/edit/${exam._id}`}
+                variant="contained"
+                color="primary"
+                sx={{ mr: 2 }}
+                aria-label="Edit Exam"
+              >
                 ✏️ Edit Exam
               </Button>
-              <Button variant="secondary" onClick={() => navigate("/exams")}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/exams")}
+                aria-label="Back"
+              >
                 ⬅️ Back
               </Button>
-            </div>
+            </Box>
           </>
         ) : (
-          <p>Loading...</p>
+          <Typography>Loading...</Typography>
         )}
       </Card>
     </Container>

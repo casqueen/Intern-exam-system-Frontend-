@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Table, Button, Form, Card, Row, Col } from "react-bootstrap";
+import { Container, Card, Button, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -19,11 +19,10 @@ const ExamList = () => {
       return;
     }
     fetchExams();
-  }, []);
+  }, [user, navigate]);
 
   const fetchExams = async () => {
     try {
-      // UPDATED: Use /api/v1 endpoint
       const response = await axios.get(`http://localhost:8080/api/v1/exams`, {
         headers: { Authorization: `Bearer ${user?.token}` },
       });
@@ -59,79 +58,126 @@ const ExamList = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <Card className="shadow-lg p-4">
-        <Row>
-          <Col sm={8}>
-            <h2 className="text-primary mb-4">📝 Exam List</h2>
-          </Col>
-          <Col sm={4} className="text-end">
+    <Container sx={{ mt: 5 }}>
+      <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} sm={8}>
+            <Typography variant="h5" color="primary" gutterBottom>
+              📝 Exam List
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={4} sx={{ textAlign: { xs: 'center', sm: 'right' } }}>
             {user?.student?.role === "admin" && (
-              <Button variant="primary" onClick={() => navigate("/exams/create")} className="me-3">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate("/exams/create")}
+                sx={{ mr: 2 }}
+                aria-label="Create Exam"
+              >
                 ➕ Create Exam
               </Button>
             )}
-            <Button variant="secondary" onClick={() => navigate("/dashboard")}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => navigate("/dashboard")}
+              aria-label="Back"
+            >
               ⬅️ Back
             </Button>
-          </Col>
-        </Row>
-        <Form className="mb-3">
-          <Form.Control
-            type="text"
-            placeholder="Search exams..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </Form>
-        <Table striped bordered hover responsive className="text-center">
-          <thead className="bg-primary text-white">
-            <tr>
-              <th>#</th>
-              <th>Title</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {exams
-              .filter((exam) => exam.title.toLowerCase().includes(search.toLowerCase()))
-              .map((exam, index) => (
-                <tr key={exam._id}>
-                  <td>{index + 1}</td>
-                  <td>{exam.title}</td>
-                  <td>{new Date(exam.createdAt).toLocaleDateString()}</td>
-                  <td>
-                    {user?.student?.role === "admin" ? (
-                      <>
-                        <Button as={Link} to={`/exams/view/${exam._id}`} variant="info" className="me-2" size="sm">
-                          👁 View
-                        </Button>
-                        <Button as={Link} to={`/exams/edit/${exam._id}`} variant="warning" className="me-2" size="sm">
-                          ✏️ Edit
-                        </Button>
+          </Grid>
+        </Grid>
+        <TextField
+          label="Search exams..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          fullWidth
+          margin="normal"
+          aria-label="Search exams"
+        />
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: 'primary.main' }}>
+                <TableCell sx={{ color: 'white' }}>#</TableCell>
+                <TableCell sx={{ color: 'white' }}>Title</TableCell>
+                <TableCell sx={{ color: 'white' }}>Date</TableCell>
+                <TableCell sx={{ color: 'white' }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {exams
+                .filter((exam) => exam.title.toLowerCase().includes(search.toLowerCase()))
+                .map((exam, index) => (
+                  <TableRow key={exam._id}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{exam.title}</TableCell>
+                    <TableCell>{new Date(exam.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {user?.student?.role === "admin" ? (
+                        <>
+                          <Button
+                            component={Link}
+                            to={`/exams/view/${exam._id}`}
+                            variant="outlined"
+                            color="info"
+                            sx={{ mr: 1 }}
+                            size="small"
+                            aria-label="View Exam"
+                          >
+                            👁 View
+                          </Button>
+                          <Button
+                            component={Link}
+                            to={`/exams/edit/${exam._id}`}
+                            variant="outlined"
+                            color="warning"
+                            sx={{ mr: 1 }}
+                            size="small"
+                            aria-label="Edit Exam"
+                          >
+                            ✏️ Edit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => handleDelete(exam._id)}
+                            sx={{ mr: 1 }}
+                            size="small"
+                            aria-label="Delete Exam"
+                          >
+                            ❌ Delete
+                          </Button>
+                          <Button
+                            component={Link}
+                            to={`/exams/results/${exam._id}`}
+                            variant="outlined"
+                            color="warning"
+                            size="small"
+                            aria-label="View Results"
+                          >
+                            📊 View Results
+                          </Button>
+                        </>
+                      ) : (
                         <Button
-                          variant="danger"
-                          className="me-2"
-                          size="sm"
-                          onClick={() => handleDelete(exam._id)}
+                          component={Link}
+                          to={`/exams/take/${exam._id}`}
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          aria-label="Take Exam"
                         >
-                          ❌ Delete
+                          🎯 Take Exam
                         </Button>
-                        <Button as={Link} to={`/exams/results/${exam._id}`} variant="warning" className="me-2" size="sm">
-                          📊 View Results
-                        </Button>
-                      </>
-                    ) : (
-                      <Button as={Link} to={`/exams/take/${exam._id}`} variant="success" className="me-2" size="sm">
-                        🎯 Take Exam
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </Table>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Card>
     </Container>
   );

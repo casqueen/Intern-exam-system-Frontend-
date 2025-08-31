@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Card, ListGroup, Button } from "react-bootstrap";
+import { Container, Card, List, ListItem, ListItemText, Button, Typography, Box } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -11,18 +11,17 @@ const Result = () => {
   const { user } = useAuthStore();
   const [result, setResult] = useState(null);
 
-  // useEffect(() => {
-  //   if (!user || user?.student?.role !== "student") {
-  //     toast.error("Access denied. Students only.");
-  //     navigate("/dashboard");
-  //     return;
-  //   }
-  //   fetchResult();
-  // }, [id]);
+  useEffect(() => {
+    if (!user || user?.student?.role !== "student") {
+      toast.error("Access denied. Students only.");
+      navigate("/dashboard");
+      return;
+    }
+    fetchResult();
+  }, [id, user, navigate]);
 
   const fetchResult = async () => {
     try {
-      // UPDATED: Use /api/v1 endpoint
       const response = await axios.get(`http://localhost:8080/api/v1/student/results/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
@@ -33,36 +32,47 @@ const Result = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <Card className="shadow-lg p-4">
-        <h2 className="text-primary mb-4">📊 Exam Result</h2>
+    <Container sx={{ mt: 5 }}>
+      <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
+        <Typography variant="h5" color="primary" gutterBottom>
+          📊 Exam Result
+        </Typography>
         {result ? (
           <>
-            <h4>{result.exam.title}</h4>
-            <p>{result.message}</p>
-            <p><strong>Score:</strong> {result.exam.score}</p>
-            <p><strong>Status:</strong> {result.exam.status}</p>
-            <p><strong>Exam Date:</strong> {result.examDate}</p>
-            <h5>Answers:</h5>
-            <ListGroup>
+            <Typography variant="h6">{result.exam.title}</Typography>
+            <Typography variant="body1">{result.message}</Typography>
+            <Typography variant="body1"><strong>Score:</strong> {result.exam.score}</Typography>
+            <Typography variant="body1"><strong>Status:</strong> {result.exam.status}</Typography>
+            <Typography variant="body1"><strong>Exam Date:</strong> {result.examDate}</Typography>
+            <Typography variant="h6" sx={{ mt: 2 }}>Answers:</Typography>
+            <List>
               {result.answers.map((answer, index) => (
-                <ListGroup.Item key={answer.questionId}>
-                  <strong>Question {index + 1}:</strong> {answer.question}
-                  <br />
-                  <strong>Your Answer:</strong> {answer.selectedOption} {answer.isCorrect ? "✅" : "❌"}
-                  <br />
-                  <strong>Correct Answer:</strong> {answer.correctAnswer}
-                </ListGroup.Item>
+                <ListItem key={answer.questionId} sx={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <ListItemText
+                    primary={`Question ${index + 1}: ${answer.question}`}
+                    secondary={
+                      <>
+                        <Typography variant="body2">Your Answer: {answer.selectedOption} {answer.isCorrect ? "✅" : "❌"}</Typography>
+                        <Typography variant="body2">Correct Answer: {answer.correctAnswer}</Typography>
+                      </>
+                    }
+                  />
+                </ListItem>
               ))}
-            </ListGroup>
-            <div className="mt-4">
-              <Button variant="secondary" onClick={() => navigate("/exam-list")}>
+            </List>
+            <Box sx={{ mt: 4 }}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/exam-list")}
+                aria-label="Back to Exams"
+              >
                 ⬅️ Back to Exams
               </Button>
-            </div>
+            </Box>
           </>
         ) : (
-          <p>Loading...</p>
+          <Typography>Loading...</Typography>
         )}
       </Card>
     </Container>

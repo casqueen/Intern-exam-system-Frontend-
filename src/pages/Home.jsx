@@ -1,4 +1,4 @@
-import { Container, Button, Card } from "react-bootstrap";
+import { Container, Button, Card, Typography, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 
@@ -7,19 +7,43 @@ const Home = () => {
   const { user } = useAuthStore();
 
   return (
-    <Container className="d-flex justify-content-center align-items-center mt-5">
-      <Card className="p-4 shadow-lg text-center" style={{ maxWidth: "600px" }}>
-        <h1 className="text-primary mb-4">Welcome to Exam Management System</h1>
-        <p className="mb-4">
+    <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 5 }}>
+      <Card sx={{ p: 4, boxShadow: 3, maxWidth: 600, width: '100%', borderRadius: 2, textAlign: 'center' }}>
+        <Typography variant="h4" color="primary" gutterBottom>
+          Welcome to Exam Management System
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 4 }}>
           Manage and take exams with ease. Admins can create exams and manage students, while students can take exams and view results.
-        </p>
+        </Typography>
         {user ? (
-          <Button variant="primary" onClick={() => navigate("/dashboard")}>Go to Dashboard</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/dashboard")}
+            aria-label="Go to Dashboard"
+          >
+            Go to Dashboard
+          </Button>
         ) : (
-          <div>
-            <Button variant="success" className="me-2" onClick={() => navigate("/login")}>Login</Button>
-            <Button variant="success" onClick={() => navigate("/register")}>Register</Button>
-          </div>
+          <Box>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => navigate("/login")}
+              sx={{ mr: 2 }}
+              aria-label="Login"
+            >
+              Login
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => navigate("/register")}
+              aria-label="Register"
+            >
+              Register
+            </Button>
+          </Box>
         )}
       </Card>
     </Container>

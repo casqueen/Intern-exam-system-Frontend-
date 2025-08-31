@@ -1,4 +1,4 @@
-import { Container, Form, Button, Card, Row, Col } from "react-bootstrap";
+import { Container, Card, Button, TextField, Typography, Grid, IconButton } from "@mui/material";
 import { Formik, Field, Form as FormikForm, FieldArray, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
@@ -6,6 +6,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import useAuthStore from "../store/authStore";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const CreateExam = () => {
   const navigate = useNavigate();
@@ -27,7 +29,6 @@ const CreateExam = () => {
       setIsEditMode(true);
       const fetchExam = async () => {
         try {
-          // UPDATED: Use /api/v1 endpoint
           const response = await axios.get(`http://localhost:8080/api/v1/exams/${id}`, {
             headers: { Authorization: `Bearer ${user.token}` },
           });
@@ -80,11 +81,11 @@ const CreateExam = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <Card className="shadow-lg p-4">
-        <h2 className="text-primary text-center mb-4">
+    <Container sx={{ mt: 5 }}>
+      <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
+        <Typography variant="h5" color="primary" align="center" gutterBottom>
           {isEditMode ? "✏️ Edit Exam" : "➕ Create New Exam"}
-        </h2>
+        </Typography>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -93,93 +94,135 @@ const CreateExam = () => {
         >
           {({ values, setFieldValue, isSubmitting }) => (
             <FormikForm>
-              <Form.Group className="mb-3">
-                <Form.Label>Exam Title</Form.Label>
-                <Field name="title" as={Form.Control} placeholder="Enter exam title" />
-                <ErrorMessage name="title" component="div" className="text-danger" />
-              </Form.Group>
+              <TextField
+                label="Exam Title"
+                name="title"
+                fullWidth
+                margin="normal"
+                as={Field}
+                helperText={<ErrorMessage name="title" component="div" />}
+                error={Boolean(ErrorMessage.name === "title")}
+                aria-label="Exam Title"
+              />
               <FieldArray name="questions">
                 {({ push, remove }) => (
                   <>
                     {values.questions.map((q, qIndex) => (
-                      <Card key={qIndex} className="mb-4 p-3">
-                        <Row>
-                          <Col>
-                            <Form.Group>
-                              <Form.Label>Question {qIndex + 1}</Form.Label>
-                              <Field
-                                name={`questions.${qIndex}.question`}
-                                as={Form.Control}
-                                placeholder="Enter question"
-                              />
-                              <ErrorMessage name={`questions.${qIndex}.question`} component="div" className="text-danger" />
-                            </Form.Group>
-                          </Col>
-                        </Row>
+                      <Card key={qIndex} sx={{ mb: 4, p: 3, boxShadow: 1, borderRadius: 2 }}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12}>
+                            <TextField
+                              label={`Question ${qIndex + 1}`}
+                              name={`questions.${qIndex}.question`}
+                              fullWidth
+                              margin="normal"
+                              as={Field}
+                              helperText={<ErrorMessage name={`questions.${qIndex}.question`} component="div" />}
+                              error={Boolean(ErrorMessage.name === `questions.${qIndex}.question`)}
+                              aria-label={`Question ${qIndex + 1}`}
+                            />
+                          </Grid>
+                        </Grid>
                         <FieldArray name={`questions.${qIndex}.options`}>
                           {({ push: pushOption, remove: removeOption }) => (
                             <>
                               {values.questions[qIndex].options.map((opt, optIndex) => (
-                                <Row key={optIndex} className="align-items-center mt-2">
-                                  <Col>
-                                    <Field
+                                <Grid container spacing={2} key={optIndex} alignItems="center" sx={{ mt: 1 }}>
+                                  <Grid item xs={10}>
+                                    <TextField
+                                      label={`Option ${optIndex + 1}`}
                                       name={`questions.${qIndex}.options.${optIndex}`}
-                                      as={Form.Control}
-                                      placeholder={`Option ${optIndex + 1}`}
+                                      fullWidth
+                                      margin="normal"
+                                      as={Field}
+                                      helperText={<ErrorMessage name={`questions.${qIndex}.options.${optIndex}`} component="div" />}
+                                      error={Boolean(ErrorMessage.name === `questions.${qIndex}.options.${optIndex}`)}
+                                      aria-label={`Option ${optIndex + 1}`}
                                     />
-                                    <ErrorMessage name={`questions.${qIndex}.options.${optIndex}`} component="div" className="text-danger" />
-                                  </Col>
+                                  </Grid>
                                   {values.questions[qIndex].options.length > 2 && (
-                                    <Col xs="auto">
-                                      <Button variant="danger" onClick={() => removeOption(optIndex)} size="sm">
-                                        🗑
-                                      </Button>
-                                    </Col>
+                                    <Grid item xs={2}>
+                                      <IconButton
+                                        color="error"
+                                        onClick={() => removeOption(optIndex)}
+                                        aria-label="Remove Option"
+                                      >
+                                        <DeleteIcon />
+                                      </IconButton>
+                                    </Grid>
                                   )}
-                                </Row>
+                                </Grid>
                               ))}
-                              <Row>
-                                <Col className="text-start">
-                                  <Button variant="success" size="sm" className="mt-2" onClick={() => pushOption("")}>
-                                    ➕ Add Option
-                                  </Button>
-                                </Col>
-                              </Row>
+                              <Grid item xs={12} sx={{ mt: 2 }}>
+                                <Button
+                                  variant="outlined"
+                                  color="success"
+                                  onClick={() => pushOption("")}
+                                  startIcon={<AddCircleOutlineIcon />}
+                                  aria-label="Add Option"
+                                >
+                                  Add Option
+                                </Button>
+                              </Grid>
                             </>
                           )}
                         </FieldArray>
-                        <Form.Group className="mt-3">
-                          <Form.Label>Correct Answer</Form.Label>
-                          <Field
-                            name={`questions.${qIndex}.correctAnswer`}
-                            as={Form.Control}
-                            placeholder="Enter correct answer"
-                          />
-                          <ErrorMessage name={`questions.${qIndex}.correctAnswer`} component="div" className="text-danger" />
-                        </Form.Group>
-                        <Row>
-                          <Col className="text-start">
-                            <Button variant="danger" className="mt-3" onClick={() => remove(qIndex)} disabled={values.questions.length === 1}>
-                              ❌ Remove Question
-                            </Button>
-                          </Col>
-                        </Row>
+                        <TextField
+                          label="Correct Answer"
+                          name={`questions.${qIndex}.correctAnswer`}
+                          fullWidth
+                          margin="normal"
+                          as={Field}
+                          helperText={<ErrorMessage name={`questions.${qIndex}.correctAnswer`} component="div" />}
+                          error={Boolean(ErrorMessage.name === `questions.${qIndex}.correctAnswer`)}
+                          aria-label="Correct Answer"
+                          sx={{ mt: 3 }}
+                        />
+                        <Grid item xs={12} sx={{ mt: 2 }}>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => remove(qIndex)}
+                            disabled={values.questions.length === 1}
+                            aria-label="Remove Question"
+                          >
+                            Remove Question
+                          </Button>
+                        </Grid>
                       </Card>
                     ))}
-                    <Button variant="primary" onClick={() => push({ question: "", options: ["", ""], correctAnswer: "" })}>
-                      ➕ Add Question
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => push({ question: "", options: ["", ""], correctAnswer: "" })}
+                      startIcon={<AddCircleOutlineIcon />}
+                      aria-label="Add Question"
+                    >
+                      Add Question
                     </Button>
                   </>
                 )}
               </FieldArray>
-              <div className="text-center mt-4">
-                <Button type="submit" variant="success" disabled={isSubmitting}>
+              <Box sx={{ textAlign: 'center', mt: 4 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="success"
+                  disabled={isSubmitting}
+                  sx={{ mr: 2 }}
+                  aria-label={isEditMode ? "Update Exam" : "Create Exam"}
+                >
                   {isSubmitting ? "Submitting..." : isEditMode ? "✅ Update Exam" : "✅ Create Exam"}
                 </Button>
-                <Button variant="secondary" className="ms-3" onClick={() => navigate("/exams")}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => navigate("/exams")}
+                  aria-label="Cancel"
+                >
                   ⬅️ Cancel
                 </Button>
-              </div>
+              </Box>
             </FormikForm>
           )}
         </Formik>

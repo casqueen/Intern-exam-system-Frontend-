@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Container, Table, Button, Form, Card, Row, Col } from "react-bootstrap";
+import { Container, Card, Button, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Swal from "sweetalert2"; // UPDATED: Added for delete confirmation
+import Swal from "sweetalert2";
 import useAuthStore from "../store/authStore";
 
 const StudentList = () => {
@@ -19,11 +19,10 @@ const StudentList = () => {
       return;
     }
     fetchStudents();
-  }, []);
+  }, [user, navigate]);
 
   const fetchStudents = async () => {
     try {
-      // UPDATED: Use /api/v1 endpoint
       const response = await axios.get(`http://localhost:8080/api/v1/admin?search=${search}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
@@ -33,7 +32,6 @@ const StudentList = () => {
     }
   };
 
-  // UPDATED: Added delete student function
   const handleDelete = async (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -60,67 +58,80 @@ const StudentList = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <Card className="shadow-lg p-4">
-        <Row>
-          <Col sm={8}>
-            <h2 className="text-primary mb-4">📋 Student List</h2>
-          </Col>
-          <Col sm={4} className="text-end">
-            <Button variant="secondary" onClick={() => navigate("/dashboard")}>
+    <Container sx={{ mt: 5 }}>
+      <Card sx={{ boxShadow: 3, p: 4, borderRadius: 2 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} sm={8}>
+            <Typography variant="h5" color="primary" gutterBottom>
+              📋 Student List
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={4} sx={{ textAlign: { xs: 'center', sm: 'right' } }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => navigate("/dashboard")}
+              aria-label="Back"
+            >
               ⬅️ Back
             </Button>
-          </Col>
-        </Row>
-        <Form className="mb-3">
-          <Form.Control
-            type="text"
-            placeholder="Search students by name or email..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              fetchStudents();
-            }}
-          />
-        </Form>
-        <Table striped bordered hover responsive className="text-center">
-          <thead className="bg-primary text-white">
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Created At</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {students.map((student, index) => (
-              <tr key={student._id}>
-                <td>{index + 1}</td>
-                <td>{student.name}</td>
-                <td>{student.email}</td>
-                <td>{new Date(student.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <Button
-                    variant="warning"
-                    className="me-2"
-                    size="sm"
-                    onClick={() => navigate(`/students/edit/${student._id}`)}
-                  >
-                    ✏️ Edit
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDelete(student._id)}
-                  >
-                    ❌ Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+          </Grid>
+        </Grid>
+        <TextField
+          label="Search students by name or email..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            fetchStudents();
+          }}
+          fullWidth
+          margin="normal"
+          aria-label="Search students"
+        />
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: 'primary.main' }}>
+                <TableCell sx={{ color: 'white' }}>#</TableCell>
+                <TableCell sx={{ color: 'white' }}>Name</TableCell>
+                <TableCell sx={{ color: 'white' }}>Email</TableCell>
+                <TableCell sx={{ color: 'white' }}>Created At</TableCell>
+                <TableCell sx={{ color: 'white' }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {students.map((student, index) => (
+                <TableRow key={student._id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{student.name}</TableCell>
+                  <TableCell>{student.email}</TableCell>
+                  <TableCell>{new Date(student.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      color="warning"
+                      onClick={() => navigate(`/students/edit/${student._id}`)}
+                      sx={{ mr: 1 }}
+                      size="small"
+                      aria-label="Edit Student"
+                    >
+                      ✏️ Edit
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleDelete(student._id)}
+                      size="small"
+                      aria-label="Delete Student"
+                    >
+                      ❌ Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Card>
     </Container>
   );
