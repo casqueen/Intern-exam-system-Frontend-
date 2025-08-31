@@ -91,8 +91,6 @@ const Footer = () => {
             px: { xs: 2, sm: 4 },
             flexDirection: { xs: "column", sm: "row" },
             gap: { xs: 2, sm: 0 },
-            maxWidth: 1400,
-            width: "100%",
             mx: "auto",
           }}
         >

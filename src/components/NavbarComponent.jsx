@@ -129,15 +129,10 @@
 
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItem, ListItemText } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import MenuIcon from "@mui/icons-material/Menu";
+import MenuIcon from '@mui/icons-material/Menu';
 import useAuthStore from "../store/authStore";
 import { useState } from "react";
-import { motion } from "framer-motion"; // Added for animations
 
-/**
- * Navbar Component
- * @description Navigation bar with role-based links and responsive drawer
- */
 const NavbarComponent = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
@@ -153,50 +148,42 @@ const NavbarComponent = () => {
   };
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }} aria-label="Exam Management">
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+      <Typography variant="h6" sx={{ my: 2 }}>
         Exam Management
       </Typography>
       <List>
         {user ? (
           <>
-            {user?.student?.role === "admin" && (
-              <>
-                <ListItem button component={Link} to="/students" aria-label="Students">
-                  <ListItemText primary="Students" />
-                </ListItem>
-                <ListItem button component={Link} to="/exams" aria-label="Exams">
-                  <ListItemText primary="Exams" />
-                </ListItem>
-                <ListItem button component={Link} to="/question-bank" aria-label="Question Bank">
-                  <ListItemText primary="Question Bank" />
-                </ListItem>
-              </>
-            )}
-            {user?.student?.role === "student" && (
-              <>
-                <ListItem button component={Link} to="/exams" aria-label="Available Exams">
-                  <ListItemText primary="Available Exams" />
-                </ListItem>
-                <ListItem button component={Link} to="/exam-list" aria-label="My Exams">
-                  <ListItemText primary="My Exams" />
-                </ListItem>
-              </>
-            )}
-            <ListItem button component={Link} to="/dashboard" aria-label="Dashboard">
+            <ListItem button component={Link} to="/students">
+              <ListItemText primary="Students" />
+            </ListItem>
+            <ListItem button component={Link} to="/exams">
+              <ListItemText primary="Exams" />
+            </ListItem>
+            <ListItem button component={Link} to="/questions">
+              <ListItemText primary="Questions" />
+            </ListItem>
+            <ListItem button component={Link} to="/dashboard">
               <ListItemText primary="Dashboard" />
             </ListItem>
-            <ListItem button onClick={handleLogout} aria-label="Logout">
+            <ListItem button onClick={handleLogout}>
               <ListItemText primary="Logout" />
             </ListItem>
           </>
         ) : (
           <>
-            <ListItem button component={Link} to="/login" aria-label="Login">
-              <ListItemText primary="Login" />
+            <ListItem button component={Link} to="/exams">
+              <ListItemText primary="Take Exams" />
             </ListItem>
-            <ListItem button component={Link} to="/register" aria-label="Register">
-              <ListItemText primary="Register" />
+            <ListItem button component={Link} to="/my-exams">
+              <ListItemText primary="My Results" />
+            </ListItem>
+            <ListItem button component={Link} to="/login">
+              <ListItemText primary="Admin Login" />
+            </ListItem>
+            <ListItem button component={Link} to="/register">
+              <ListItemText primary="Admin Register" />
             </ListItem>
           </>
         )}
@@ -205,68 +192,36 @@ const NavbarComponent = () => {
   );
 
   return (
-    <motion.div initial={{ y: -50 }} animate={{ y: 0 }} transition={{ duration: 0.5 }}>
-      <AppBar position="static" color="primary" role="navigation">
+    <>
+      <AppBar position="static" color="primary">
         <Toolbar>
-          <Typography
-            variant="h6"
-            component={Link}
-            to="/"
-            sx={{ flexGrow: 1, textDecoration: "none", color: "inherit" }}
-            aria-label="Exam Management Home"
-          >
+          <Typography variant="h6" component={Link} to="/" sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}>
             Exam Management
           </Typography>
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             {user ? (
               <>
-                {user?.student?.role === "admin" && (
-                  <>
-                    <Button color="inherit" component={Link} to="/students" aria-label="Students">
-                      Students
-                    </Button>
-                    <Button color="inherit" component={Link} to="/exams" aria-label="Exams">
-                      Exams
-                    </Button>
-                    <Button color="inherit" component={Link} to="/question-bank" aria-label="Question Bank">
-                      Question Bank
-                    </Button>
-                  </>
-                )}
-                {user?.student?.role === "student" && (
-                  <>
-                    <Button color="inherit" component={Link} to="/exams" aria-label="Available Exams">
-                      Available Exams
-                    </Button>
-                    <Button color="inherit" component={Link} to="/exam-list" aria-label="My Exams">
-                      My Exams
-                    </Button>
-                  </>
-                )}
-                <Button color="warning" component={Link} to="/dashboard" aria-label="Dashboard">
-                  Dashboard
-                </Button>
-                <Button color="inherit" onClick={handleLogout} aria-label="Logout">
-                  Logout
-                </Button>
+                <Button color="inherit" component={Link} to="/students">Students</Button>
+                <Button color="inherit" component={Link} to="/exams">Exams</Button>
+                <Button color="inherit" component={Link} to="/questions">Questions</Button>
+                <Button color="warning" component={Link} to="/dashboard">Dashboard</Button>
+                <Button color="inherit" onClick={handleLogout}>Logout</Button>
               </>
             ) : (
               <>
-                <Button color="warning" component={Link} to="/login" aria-label="Login">
-                  Login
-                </Button>
-                <Button color="warning" component={Link} to="/register" aria-label="Register">
-                  Register
-                </Button>
+                <Button color="inherit" component={Link} to="/exams">Take Exams</Button>
+                <Button color="inherit" component={Link} to="/my-exams">My Results</Button>
+                <Button color="warning" component={Link} to="/login">Admin Login</Button>
+                <Button color="warning" component={Link} to="/register">Admin Register</Button>
               </>
             )}
           </Box>
           <IconButton
             color="inherit"
-            aria-label="Open drawer"
+            aria-label="open drawer"
             edge="end"
             onClick={handleDrawerToggle}
-            sx={{ display: { md: "none" } }}
+            sx={{ display: { md: 'none' } }}
           >
             <MenuIcon />
           </IconButton>
@@ -276,13 +231,11 @@ const NavbarComponent = () => {
         anchor="right"
         open={mobileOpen}
         onClose={handleDrawerToggle}
-        sx={{ display: { xs: "block", md: "none" } }}
-        aria-label="Mobile navigation menu"
+        sx={{ display: { xs: 'block', md: 'none' } }}
       >
         {drawer}
       </Drawer>
-    </motion.div>
+    </>
   );
 };
-
 export default NavbarComponent;
