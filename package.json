@@ -3,29 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.14.18",
-    "@mui/material": "^5.14.18",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
-    "@testing-library/user-event": "^13.5.0",
-    "bootstrap": "^5.3.8",
-    "react-bootstrap": "^2.10.10",
-    "ajv": "^8.17.1",
-    "axios": "^1.11.0",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.4",
+    "@mui/material": "^6.1.4",
+    "@mui/x-data-grid": "^7.22.2",
+    "axios": "^1.7.7",
     "formik": "^2.4.6",
-    "jwt-decode": "^4.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router-dom": "^7.8.2",
-    "react-scripts": "5.0.1",
-    "react-toastify": "^11.0.5",
-    "sweetalert2": "^11.22.5",
-    "web-vitals": "^2.1.4",
-    "yup": "^1.7.0",
-    "zustand": "^5.0.8"
+    "framer-motion": "^11.11.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-dropzone": "^14.3.8",
+    "react-router-dom": "^6.27.0",
+    "react-toastify": "^10.0.6",
+    "sweetalert2": "^11.14.4",
+    "web-vitals": "^5.1.0",
+    "yup": "^1.4.0",
+    "zustand": "^5.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -50,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1"
   }
 }

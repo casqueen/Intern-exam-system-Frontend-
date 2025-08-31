@@ -14,6 +14,7 @@ import TakeExam from "./pages/TakeExam";
 import Result from "./pages/Result";
 import ExamResults from "./pages/ExamResults";
 import StudentExamList from "./pages/StudentExamList";
+import QuestionBank from "./pages/QusetionBank";
 import Footer from "./components/Footer";
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
@@ -39,6 +40,7 @@ function App() {
               <Route path="/result/:id" element={<Result />} />
               <Route path="/exams/results/:examId" element={<ExamResults />} />
               <Route path="/exam-list" element={<StudentExamList />} />
+              <Route path="/question-bank" element={<QuestionBank />} />
             </Routes>
           </main>
           <Footer />
