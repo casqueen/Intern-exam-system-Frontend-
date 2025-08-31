@@ -19,12 +19,12 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-// import { DropzoneArea } from "react-dropzone";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import useAuthStore from "../store/authStore";
 import LoadingSpinner from "../components/LoadingSpinner"; // Assumed to exist
 import { motion } from "framer-motion"; // For animations
+import { form } from "framer-motion/client";
 
 /**
  * QuestionBank Component
@@ -37,16 +37,10 @@ const QuestionBank = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     type: "",
-    text: "",
+    ques: "",
     options: ["", ""],
     correctAnswers: [],
-    blankAnswer: "",
-    keywords: [],
-    matchingLeft: [],
-    matchingRight: [],
-    correctMatches: [],
     points: 1,
-    image: null,
   });
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -94,33 +88,15 @@ const QuestionBank = () => {
     setFormData({ ...formData, [field]: updatedArray });
   };
 
-  const handleMatchesInput = (e, index, subField) => {
-    const updatedMatches = [...formData.correctMatches];
-    updatedMatches[index] = { ...updatedMatches[index], [subField]: e.target.value };
-    setFormData({ ...formData, correctMatches: updatedMatches });
-  };
-
-  const handleAddMatch = () => {
-    setFormData({
-      ...formData,
-      correctMatches: [...formData.correctMatches, { left: "", right: "" }],
-    });
-  };
-
-  const handleImageDrop = (acceptedFiles) => {
-    setFormData({ ...formData, image: acceptedFiles[0] });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       const data = new FormData();
       for (const key in formData) {
+        console.log("form data, ", key, "data==>", formData[key]);
         if (Array.isArray(formData[key])) {
           data.append(key, JSON.stringify(formData[key]));
-        } else if (key === "image" && formData[key]) {
-          data.append("image", formData[key]);
         } else {
           data.append(key, formData[key]);
         }
@@ -129,6 +105,7 @@ const QuestionBank = () => {
         ? `http://localhost:8080/api/v1/questions/${editId}`
         : "http://localhost:8080/api/v1/questions";
       const method = isEditMode ? "put" : "post";
+      console.log('data-->', data);
       const response = await axios({
         method,
         url,
@@ -142,6 +119,7 @@ const QuestionBank = () => {
       fetchQuestions();
       resetForm();
     } catch (error) {
+      console.log("error details:", error);
       toast.error(error.response?.data?.error || `Failed to ${isEditMode ? "update" : "create"} question`);
     } finally {
       setLoading(false);
@@ -151,7 +129,7 @@ const QuestionBank = () => {
   const resetForm = () => {
     setFormData({
       type: "",
-      text: "",
+      ques: "",
       options: ["", ""],
       correctAnswers: [],
       blankAnswer: "",
@@ -169,7 +147,7 @@ const QuestionBank = () => {
   const handleEdit = (question) => {
     setFormData({
       type: question.type,
-      text: question.text,
+      ques: question.ques,
       options: question.options || [],
       correctAnswers: question.correctAnswers || [],
       blankAnswer: question.blankAnswer || "",
@@ -198,7 +176,7 @@ const QuestionBank = () => {
 
   const columns = [
     { field: "index", headerName: "#", width: 70, renderCell: (params) => params.row.index + 1 },
-    { field: "text", headerName: "Question Text", width: 300 },
+    { field: "ques", headerName: "Question Text", width: 300 },
     { field: "type", headerName: "Type", width: 150, renderCell: (params) => <Chip label={params.value} color="primary" /> },
     { field: "points", headerName: "Points", width: 100 },
     {
@@ -210,14 +188,14 @@ const QuestionBank = () => {
           <IconButton
             onClick={() => handleEdit(params.row)}
             color="primary"
-            aria-label={`Edit question ${params.row.text}`}
+            aria-label={`Edit question ${params.row.ques}`}
           >
             <EditIcon />
           </IconButton>
           <IconButton
             onClick={() => handleDelete(params.row._id)}
             color="error"
-            aria-label={`Delete question ${params.row.text}`}
+            aria-label={`Delete question ${params.row.ques}`}
           >
             <DeleteIcon />
           </IconButton>
@@ -275,12 +253,12 @@ const QuestionBank = () => {
                   <Grid item xs={12}>
                     <TextField
                       label="Question Text"
-                      name="text"
-                      value={formData.text}
+                      name="ques"
+                      value={formData.ques}
                       onChange={handleInputChange}
                       fullWidth
                       margin="normal"
-                      aria-label="Question text"
+                      aria-label="Question ques"
                     />
                   </Grid>
                   {(formData.type === "mcq-single" || formData.type === "mcq-multiple" || formData.type === "true-false") && (
