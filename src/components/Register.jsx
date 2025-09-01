@@ -159,7 +159,7 @@ const Register = () => {
     <Container sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 5 }}>
       <Card sx={{ p: 4, boxShadow: 3, width: "100%", maxWidth: 400, borderRadius: 2 }}>
         <Typography variant="h5" align="center" gutterBottom>
-          📝 Admin Register
+          📝 Register
         </Typography>
         <Formik
           initialValues={{ name: "", email: "", password: "" }}

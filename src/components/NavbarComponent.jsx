@@ -26,26 +26,15 @@
 //       <List>
 //         {user ? (
 //           <>
-//             {user?.student?.role === "admin" && (
-//               <>
-//                 <ListItem button component={Link} to="/students">
-//                   <ListItemText primary="Students" />
-//                 </ListItem>
-//                 <ListItem button component={Link} to="/exams">
-//                   <ListItemText primary="Exams" />
-//                 </ListItem>
-//               </>
-//             )}
-//             {user?.student?.role === "student" && (
-//               <>
-//                 <ListItem button component={Link} to="/exams">
-//                   <ListItemText primary="Available Exams" />
-//                 </ListItem>
-//                 <ListItem button component={Link} to="/exam-list">
-//                   <ListItemText primary="My Exams" />
-//                 </ListItem>
-//               </>
-//             )}
+//             <ListItem button component={Link} to="/students">
+//               <ListItemText primary="Students" />
+//             </ListItem>
+//             <ListItem button component={Link} to="/exams">
+//               <ListItemText primary="Exams" />
+//             </ListItem>
+//             <ListItem button component={Link} to="/questions">
+//               <ListItemText primary="Questions" />
+//             </ListItem>
 //             <ListItem button component={Link} to="/dashboard">
 //               <ListItemText primary="Dashboard" />
 //             </ListItem>
@@ -55,11 +44,17 @@
 //           </>
 //         ) : (
 //           <>
+//             <ListItem button component={Link} to="/exams">
+//               <ListItemText primary="Take Exams" />
+//             </ListItem>
+//             <ListItem button component={Link} to="/my-exams">
+//               <ListItemText primary="My Results" />
+//             </ListItem>
 //             <ListItem button component={Link} to="/login">
-//               <ListItemText primary="Login" />
+//               <ListItemText primary="Admin Login" />
 //             </ListItem>
 //             <ListItem button component={Link} to="/register">
-//               <ListItemText primary="Register" />
+//               <ListItemText primary="Admin Register" />
 //             </ListItem>
 //           </>
 //         )}
@@ -77,25 +72,18 @@
 //           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
 //             {user ? (
 //               <>
-//                 {user?.student?.role === "admin" && (
-//                   <>
-//                     <Button color="inherit" component={Link} to="/students">Students</Button>
-//                     <Button color="inherit" component={Link} to="/exams">Exams</Button>
-//                   </>
-//                 )}
-//                 {user?.student?.role === "student" && (
-//                   <>
-//                     <Button color="inherit" component={Link} to="/exams">Available Exams</Button>
-//                     <Button color="inherit" component={Link} to="/exam-list">My Exams</Button>
-//                   </>
-//                 )}
+//                 <Button color="inherit" component={Link} to="/students">Students</Button>
+//                 <Button color="inherit" component={Link} to="/exams">Exams</Button>
+//                 <Button color="inherit" component={Link} to="/questions">Questions</Button>
 //                 <Button color="warning" component={Link} to="/dashboard">Dashboard</Button>
 //                 <Button color="inherit" onClick={handleLogout}>Logout</Button>
 //               </>
 //             ) : (
 //               <>
-//                 <Button color="warning" component={Link} to="/login">Login</Button>
-//                 <Button color="warning" component={Link} to="/register">Register</Button>
+//                 <Button color="inherit" component={Link} to="/exams">Take Exams</Button>
+//                 <Button color="inherit" component={Link} to="/my-exams">My Results</Button>
+//                 <Button color="warning" component={Link} to="/login">Admin Login</Button>
+//                 <Button color="warning" component={Link} to="/register">Admin Register</Button>
 //               </>
 //             )}
 //           </Box>
@@ -121,10 +109,7 @@
 //     </>
 //   );
 // };
-
 // export default NavbarComponent;
-
-
 
 
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItem, ListItemText } from "@mui/material";
@@ -132,21 +117,17 @@ import { Link, useNavigate } from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
 import useAuthStore from "../store/authStore";
 import { useState } from "react";
-
 const NavbarComponent = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
-
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <Typography variant="h6" sx={{ my: 2 }}>
@@ -173,8 +154,8 @@ const NavbarComponent = () => {
           </>
         ) : (
           <>
-            <ListItem button component={Link} to="/exams">
-              <ListItemText primary="Take Exams" />
+            <ListItem button component={Link} to="/testing-room">
+              <ListItemText primary="Start Test" />
             </ListItem>
             <ListItem button component={Link} to="/my-exams">
               <ListItemText primary="My Results" />
@@ -190,7 +171,6 @@ const NavbarComponent = () => {
       </List>
     </Box>
   );
-
   return (
     <>
       <AppBar position="static" color="primary">
@@ -209,10 +189,10 @@ const NavbarComponent = () => {
               </>
             ) : (
               <>
-                <Button color="inherit" component={Link} to="/exams">Take Exams</Button>
-                <Button color="inherit" component={Link} to="/my-exams">My Results</Button>
-                <Button color="warning" component={Link} to="/login">Admin Login</Button>
-                <Button color="warning" component={Link} to="/register">Admin Register</Button>
+                {/* <Button color="inherit" component={Link} to="/testing-room">Start Test</Button>
+                <Button color="inherit" component={Link} to="/my-exams">My Results</Button> */}
+                <Button color="warning" component={Link} to="/login">Login</Button>
+                <Button color="warning" component={Link} to="/register">Register</Button>
               </>
             )}
           </Box>

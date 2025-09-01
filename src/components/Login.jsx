@@ -148,7 +148,7 @@ const Login = () => {
     <Container sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 5 }}>
       <Card sx={{ p: 4, boxShadow: 3, width: "100%", maxWidth: 400, borderRadius: 2 }}>
         <Typography variant="h5" align="center" gutterBottom>
-          🔑 Admin Login
+          🔑 Login
         </Typography>
         <Formik
           initialValues={{ email: "", password: "" }}
