@@ -17,6 +17,8 @@ const CreateQuestion = () => {
     question: "",
     options: ["", ""],
     correctAnswers: [],
+    score: 1,
+    allowedTime: 60,
   });
   const [isEditMode, setIsEditMode] = useState(false);
   const { user } = useAuthStore();
@@ -38,15 +40,14 @@ const CreateQuestion = () => {
       const response = await axios.get(`http://localhost:8080/api/v1/questions/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
-      
-      const temp = {
+      setInitialValues({
         type: response.data.type,
         question: response.data.question,
-        correctAnswers: response.data.correctAnswers,
         options: response.data.options,
-      }
-      console.log("fetched", temp);
-      setInitialValues(temp);
+        correctAnswers: response.data.correctAnswers,
+        score: response.data.score,
+        allowedTime: response.data.allowedTime,
+      });
     } catch (error) {
       toast.error("Failed to fetch question");
     }
@@ -56,15 +57,15 @@ const CreateQuestion = () => {
     type: Yup.string().oneOf(["single", "multiple"]).required("Type is required"),
     question: Yup.string().required("Question is required"),
     options: Yup.array().of(Yup.string().required("Option is required")).min(2, "At least two options required"),
-    correctAnswers: Yup.array().min(1, "At least one correct answer").test(
-      "valid-correct",
-      "Correct answers must be from options",
-      function (value) {
+    correctAnswers: Yup.array()
+      .min(1, "At least one correct answer")
+      .test("valid-correct", "Correct answers must be from options", function (value) {
         const { options, type } = this.parent;
         if (type === "single" && value.length !== 1) return false;
         return value.every((v) => options.includes(v));
-      }
-    ),
+      }),
+    score: Yup.number().min(1, "Score must be at least 1").required("Score is required"),
+    allowedTime: Yup.number().min(10, "Allowed time must be at least 10 seconds").required("Allowed time is required"),
   });
 
   const handleSubmit = async (values, { setSubmitting }) => {
@@ -141,7 +142,12 @@ const CreateQuestion = () => {
                         </Grid>
                       </Grid>
                     ))}
-                    <Button variant="outlined" color="success" onClick={() => push("")} startIcon={<AddCircleOutlineIcon />}>
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      onClick={() => push("")}
+                      startIcon={<AddCircleOutlineIcon />}
+                    >
                       Add Option
                     </Button>
                   </>
@@ -162,8 +168,40 @@ const CreateQuestion = () => {
                   />
                 )}
               />
+              <TextField
+                label="Score"
+                name="score"
+                type="number"
+                fullWidth
+                margin="normal"
+                value={values.score}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.score && Boolean(errors.score)}
+                helperText={touched.score && errors.score}
+                inputProps={{ min: 1 }}
+              />
+              <TextField
+                label="Allowed Time (seconds)"
+                name="allowedTime"
+                type="number"
+                fullWidth
+                margin="normal"
+                value={values.allowedTime}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.allowedTime && Boolean(errors.allowedTime)}
+                helperText={touched.allowedTime && errors.allowedTime}
+                inputProps={{ min: 10 }}
+              />
               <Box sx={{ textAlign: "center", mt: 4 }}>
-                <Button type="submit" variant="contained" color="success" disabled={isSubmitting} sx={{ mr: 2 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="success"
+                  disabled={isSubmitting}
+                  sx={{ mr: 2 }}
+                >
                   {isSubmitting ? "Submitting..." : isEditMode ? "✅ Update Question" : "✅ Create Question"}
                 </Button>
                 <Button variant="outlined" color="secondary" onClick={() => navigate("/questions")}>
@@ -177,4 +215,5 @@ const CreateQuestion = () => {
     </Container>
   );
 };
+
 export default CreateQuestion;
