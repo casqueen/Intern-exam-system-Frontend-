@@ -38,7 +38,15 @@ const CreateQuestion = () => {
       const response = await axios.get(`http://localhost:8080/api/v1/questions/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
-      setInitialValues(response.data);
+      
+      const temp = {
+        type: response.data.type,
+        question: response.data.question,
+        correctAnswers: response.data.correctAnswers,
+        options: response.data.options,
+      }
+      console.log("fetched", temp);
+      setInitialValues(temp);
     } catch (error) {
       toast.error("Failed to fetch question");
     }
