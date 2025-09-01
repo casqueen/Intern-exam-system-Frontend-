@@ -14,7 +14,9 @@
 // import Result from "./pages/Result";
 // import ExamResults from "./pages/ExamResults";
 // import StudentExamList from "./pages/StudentExamList";
-// import QuestionBank from "./pages/QusetionBank";
+// import QuestionList from "./pages/QuestionList";
+// import CreateQuestion from "./pages/CreateQuestion";
+// import QuestionDetails from "./pages/QuestionDetails";
 // import Footer from "./components/Footer";
 // import { ThemeProvider } from '@mui/material/styles';
 // import theme from './theme';
@@ -39,8 +41,11 @@
 //               <Route path="/exams/take/:id" element={<TakeExam />} />
 //               <Route path="/result/:id" element={<Result />} />
 //               <Route path="/exams/results/:examId" element={<ExamResults />} />
-//               <Route path="/exam-list" element={<StudentExamList />} />
-//               <Route path="/question-bank" element={<QuestionBank />} />
+//               <Route path="/my-exams" element={<StudentExamList />} />
+//               <Route path="/questions" element={<QuestionList />} />
+//               <Route path="/questions/create" element={<CreateQuestion />} />
+//               <Route path="/questions/edit/:id" element={<CreateQuestion />} />
+//               <Route path="/questions/view/:id" element={<QuestionDetails />} />
 //             </Routes>
 //           </main>
 //           <Footer />
@@ -50,7 +55,6 @@
 //     </ThemeProvider>
 //   );
 // }
-
 // export default App;
 
 
@@ -73,6 +77,7 @@ import StudentExamList from "./pages/StudentExamList";
 import QuestionList from "./pages/QuestionList";
 import CreateQuestion from "./pages/CreateQuestion";
 import QuestionDetails from "./pages/QuestionDetails";
+import TestingRoom from "./pages/TestingRoom";
 import Footer from "./components/Footer";
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
@@ -95,6 +100,7 @@ function App() {
               <Route path="/exams/create" element={<CreateExam />} />
               <Route path="/exams/edit/:id" element={<CreateExam />} />
               <Route path="/exams/take/:id" element={<TakeExam />} />
+              <Route path="/testing-room" element={<TestingRoom />} />
               <Route path="/result/:id" element={<Result />} />
               <Route path="/exams/results/:examId" element={<ExamResults />} />
               <Route path="/my-exams" element={<StudentExamList />} />
@@ -111,4 +117,5 @@ function App() {
     </ThemeProvider>
   );
 }
+
 export default App;
