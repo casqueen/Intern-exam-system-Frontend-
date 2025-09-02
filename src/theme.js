@@ -139,6 +139,7 @@ const theme = createTheme({
           "& .MuiOutlinedInput-root": {
             borderRadius: 8,
           },
+        borderColor: "#d32f2f",
         },
       },
     },
