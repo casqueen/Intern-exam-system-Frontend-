@@ -18,7 +18,7 @@ const CreateQuestion = () => {
     options: ["", ""],
     correctAnswers: [],
     score: 1,
-    allowedTime: 60,
+    // allowedTime: 60,
   });
   const [isEditMode, setIsEditMode] = useState(false);
   const { user } = useAuthStore();
@@ -40,14 +40,15 @@ const CreateQuestion = () => {
       const response = await axios.get(`http://localhost:8080/api/v1/questions/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
-      setInitialValues({
+      const temp = {
         type: response.data.type,
         question: response.data.question,
-        options: response.data.options,
         correctAnswers: response.data.correctAnswers,
+        options: response.data.options,
         score: response.data.score,
-        allowedTime: response.data.allowedTime,
-      });
+        // allowedTime: response.data.allowedTime,
+      };
+      setInitialValues(temp);
     } catch (error) {
       toast.error("Failed to fetch question");
     }
@@ -59,13 +60,14 @@ const CreateQuestion = () => {
     options: Yup.array().of(Yup.string().required("Option is required")).min(2, "At least two options required"),
     correctAnswers: Yup.array()
       .min(1, "At least one correct answer")
-      .test("valid-correct", "Correct answers must be from options", function (value) {
+      .test("valid-correct", "Correct answers must be from options", 
+      function (value) {
         const { options, type } = this.parent;
         if (type === "single" && value.length !== 1) return false;
         return value.every((v) => options.includes(v));
       }),
     score: Yup.number().min(1, "Score must be at least 1").required("Score is required"),
-    allowedTime: Yup.number().min(10, "Allowed time must be at least 10 seconds").required("Allowed time is required"),
+  //   allowedTime: Yup.number().min(10, "Allowed time must be at least 10 seconds").required("Allowed time is required"),
   });
 
   const handleSubmit = async (values, { setSubmitting }) => {
@@ -181,7 +183,7 @@ const CreateQuestion = () => {
                 helperText={touched.score && errors.score}
                 inputProps={{ min: 1 }}
               />
-              <TextField
+              {/* <TextField
                 label="Allowed Time (seconds)"
                 name="allowedTime"
                 type="number"
@@ -193,7 +195,7 @@ const CreateQuestion = () => {
                 error={touched.allowedTime && Boolean(errors.allowedTime)}
                 helperText={touched.allowedTime && errors.allowedTime}
                 inputProps={{ min: 10 }}
-              />
+              /> */}
               <Box sx={{ textAlign: "center", mt: 4 }}>
                 <Button
                   type="submit"
