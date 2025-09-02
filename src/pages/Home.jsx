@@ -28,7 +28,7 @@ const Home = () => {
             <Button
               variant="contained"
               color="success"
-              onClick={() => navigate("/testing-room")}
+              onClick={() => navigate("/take-exams")}
               sx={{ mr: 3 }}
               aria-label="Take Exam"
             >
