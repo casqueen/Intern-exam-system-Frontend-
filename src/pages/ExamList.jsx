@@ -148,7 +148,7 @@ const ExamList = () => {
                             color="info"
                             sx={{ mr: 1 }}
                             size="small"
-                            aria-label={`View ${exam.title}`}
+                            // aria-label={`View ${exam.title}`}
                           >
                             👁 View
                           </Button>
@@ -159,7 +159,7 @@ const ExamList = () => {
                             color="warning"
                             sx={{ mr: 1 }}
                             size="small"
-                            aria-label={`Edit ${exam.title}`}
+                            // aria-label={`Edit ${exam.title}`}
                           >
                             ✏️ Edit
                           </Button>
@@ -169,7 +169,7 @@ const ExamList = () => {
                             onClick={() => handleDelete(exam._id)}
                             sx={{ mr: 1 }}
                             size="small"
-                            aria-label={`Delete ${exam.title}`}
+                            // aria-label={`Delete ${exam.title}`}
                           >
                             ❌ Delete
                           </Button>
@@ -179,7 +179,7 @@ const ExamList = () => {
                             variant="outlined"
                             color="warning"
                             size="small"
-                            aria-label={`View Results for ${exam.title}`}
+                            // aria-label={`View Results for ${exam.title}`}
                           >
                             📊 View Results
                           </Button>

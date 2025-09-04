@@ -45,15 +45,15 @@ const ExamDetails = () => {
             </Typography>
             <Typography variant="h6" sx={{ mt: 2 }}>Questions:</Typography>
             <List>
-              {exam.questions.map((q, index) => (
+              {exam.questionIds.map((q, index) => (
                 <ListItem key={q._id} sx={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                   <ListItemText
                     primary={`Question ${index + 1}: ${q.question}`}
                     secondary={
                       <>
-                        <Typography variant="body2">Type: {q.type}</Typography>
-                        <Typography variant="body2">Options: {q.options.join(", ")}</Typography>
-                        <Typography variant="body2">Correct Answers: {q.correctAnswers.join(", ")}</Typography>
+                        {/* <Typography variant="body2">Type: {q.type}</Typography> */}
+                        {/* <Typography variant="body2">Options: {q.options.join(", ")}</Typography> */}
+                        {/* <Typography variant="body2">Correct Answers: {q.correctAnswers.join(", ")}</Typography> */}
                       </>
                     }
                   />

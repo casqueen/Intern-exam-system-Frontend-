@@ -32,6 +32,7 @@ const TakeExams = () => {
     try {
       setLoading(true);
       const response = await axios.get("http://localhost:8080/api/v1/exams");
+      console.log("Fetched exams:", response.data); // Debug: Log fetched exams
       setExams(response.data.exams);
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to fetch exams");
@@ -87,7 +88,7 @@ const TakeExams = () => {
                       }}
                     >
                       <TableCell>{exam.title}</TableCell>
-                      <TableCell>{exam.questions.length}</TableCell>
+                      {/* <TableCell>{exam.questionIds.length}</TableCell> */}
                       <TableCell>{new Date(exam.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Button

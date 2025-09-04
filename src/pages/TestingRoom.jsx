@@ -63,7 +63,7 @@ const TestingRoom = () => {
 
   useEffect(() => {
     if (!examId) {
-      fetchQuestionCount();
+      // fetchQuestionCount();
     } else {
       fetchExam();
     }
@@ -85,25 +85,24 @@ const TestingRoom = () => {
   }, [timeLeft, step]);
 
 
-  const fetchQuestionCount = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/api/v1/questions/count");
-      setMaxQuestions(response.data.count);
-    } catch (error) {
-    //   toast.error("Failed to fetch question count");
-    }
-  };
+  // const fetchQuestionCount = async () => {
+  //   try {
+  //     const response = await axios.get("http://localhost:8080/api/v1/questions/count");
+  //     setMaxQuestions(response.data.count);
+  //   } catch (error) {
+  //   //   toast.error("Failed to fetch question count");
+  //   }
+  // };
   
   const fetchExam = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/exams/${examId}`);
       setExam(response.data);
-      setAnswers(response.data.questions.map((q) => ({ questionId: q._id, selectedOptions: [] })));
+      setAnswers(response.data.questionIds.map((q) => ({ questionId: q._id, selectedOptions: [] })));
       setTimeLeft(response.data.duration || 30 * 60);
       setStep(3);
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to fetch exam");
-      navigate("/exams");
     }
   };
 
@@ -338,7 +337,7 @@ const TestingRoom = () => {
           {exam ? (
             <>
               <List>
-                {exam.questions.map((question, index) => (
+                {exam.questionIds.map((question, index) => (
                   <motion.div
                     key={question._id}
                     initial={{ opacity: 0, x: -50 }}

@@ -106,7 +106,7 @@ const CreateExam = () => {
                     {...params}
                     label="Select Questions"
                     margin="normal"
-                    error={touched.questionIds && Boolean(errors.questionIds)}
+                    error={touched.question && Boolean(errors.questionIds)}
                     helperText={touched.questionIds && errors.questionIds}
                   />
                 )}
