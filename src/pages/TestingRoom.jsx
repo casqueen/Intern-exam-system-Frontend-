@@ -102,7 +102,7 @@ const TestingRoom = () => {
       setTimeLeft(response.data.duration || 30 * 60);
       setStep(3);
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to fetch exam");
+      // toast.error(error.response?.data?.error || "Failed to fetch exam");
     }
   };
 

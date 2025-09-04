@@ -54,7 +54,7 @@ const TakeExam = () => {
       setAnswers(response.data.questions.map((q) => ({ questionId: q._id, selectedOptions: [] })));
     } catch (error) {
       console.error("Error fetching exam:", error);
-      toast.error(error.response?.data?.error || "Failed to fetch exam. Please check if the exam exists.");
+      // toast.error(error.response?.data?.error || "Failed to fetch exam. Please check if the exam exists.");
       navigate("/exams");
     }
   };

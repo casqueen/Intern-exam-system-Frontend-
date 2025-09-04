@@ -27,7 +27,7 @@ const ExamDetails = () => {
       });
       setExam(response.data);
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to fetch exam");
+      // toast.error(error.response?.data?.error || "Failed to fetch exam");
     }
   };
 

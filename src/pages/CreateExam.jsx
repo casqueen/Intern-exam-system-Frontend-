@@ -46,7 +46,7 @@ const CreateExam = () => {
       });
       setInitialValues({ title: response.data.title, questionIds: response.data.questions.map(q => q._id) });
     } catch (error) {
-      toast.error("Failed to fetch exam");
+      // toast.error("Failed to fetch exam");
     }
   };
 

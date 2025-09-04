@@ -35,7 +35,7 @@ const TakeExams = () => {
       console.log("Fetched exams:", response.data); // Debug: Log fetched exams
       setExams(response.data.exams);
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to fetch exams");
+      // toast.error(error.response?.data?.error || "Failed to fetch exams");
     } finally {
       setLoading(false);
     }
