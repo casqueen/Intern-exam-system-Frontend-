@@ -121,7 +121,7 @@ const TakeExams = () => {
             <Button
               variant="outlined"
               color="secondary"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/")}
               sx={{ px: 4, py: 1.5, borderRadius: 2 }}
               aria-label="Back to dashboard"
             >

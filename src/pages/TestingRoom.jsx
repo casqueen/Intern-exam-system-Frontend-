@@ -159,7 +159,7 @@ const TestingRoom = () => {
     //   .max(maxQuestions, `Maximum ${maxQuestions} questions available`),
     duration: Yup.number()
       .required("Duration is required")
-      .min(10, "Minimum duration is 10 minutes")
+      .min(5, "Minimum duration is 5 minutes")
       .max(180, "Maximum duration is 180 minutes"),
   });
 
@@ -254,7 +254,7 @@ const TestingRoom = () => {
               Select the duration for your exam.
             </Typography>
             <Formik
-              initialValues={{ duration: 30 }}
+              initialValues={{ duration: 5 }}
               validationSchema={selectionValidation}
               onSubmit={async (values) => {
                 setDuration(values.duration);
@@ -273,6 +273,7 @@ const TestingRoom = () => {
                       label="Duration (minutes)"
                       onChange={(e) => setFieldValue("duration", e.target.value)}
                     >
+                      <MenuItem value={5}>5 minutes</MenuItem>
                       <MenuItem value={10}>10 minutes</MenuItem>
                       <MenuItem value={30}>30 minutes</MenuItem>
                       <MenuItem value={60}>60 minutes</MenuItem>

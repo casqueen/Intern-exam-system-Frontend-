@@ -135,7 +135,7 @@ const Dashboard = () => {
         />
       </Box>
 
-      <Card sx={{ boxShadow: 2, p: 3, borderRadius: 2, mt: 4, textAlign: "center" }}>
+      {/* <Card sx={{ boxShadow: 2, p: 3, borderRadius: 2, mt: 4, textAlign: "center" }}>
         <Typography variant="h6" gutterBottom>
           Enter the Testing Room
         </Typography>
@@ -154,7 +154,7 @@ const Dashboard = () => {
         >
           🚪 Go to Testing Room
         </Button>
-      </Card>
+      </Card> */}
 
     </Container>
   );

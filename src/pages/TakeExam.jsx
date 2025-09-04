@@ -165,6 +165,8 @@ const TakeExam = () => {
           <FormControl fullWidth margin="normal">
             <InputLabel>Duration (minutes)</InputLabel>
             <Select value={duration} onChange={(e) => setDuration(e.target.value)} aria-label="Exam Duration">
+              <MenuItem value={5}>5</MenuItem>
+              <MenuItem value={10}>10</MenuItem>
               <MenuItem value={30}>30</MenuItem>
               <MenuItem value={60}>60</MenuItem>
               <MenuItem value={90}>90</MenuItem>
