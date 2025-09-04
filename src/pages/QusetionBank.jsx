@@ -47,7 +47,7 @@ const QuestionBank = () => {
 
   useEffect(() => {
     if (!user || user?.student?.role !== "admin") {
-      toast.error("Access denied. Admins only.");
+      // toast.error("Access denied. Admins only.");
       navigate("/dashboard");
       return;
     }

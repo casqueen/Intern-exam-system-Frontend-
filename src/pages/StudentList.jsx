@@ -17,7 +17,7 @@ const StudentList = () => {
 
   useEffect(() => {
     if (!user) {
-      toast.error("Access denied. Admins only.");
+      // toast.error("Access denied. Admins only.");
       navigate("/login");
       return;
     }

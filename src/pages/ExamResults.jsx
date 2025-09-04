@@ -11,7 +11,7 @@ const ExamResults = () => {
   const [results, setResults] = useState([]);
   useEffect(() => {
     if (!user) {
-      toast.error("Access denied. Admins only.");
+      // toast.error("Access denied. Admins only.");
       navigate("/login");
       return;
     }
