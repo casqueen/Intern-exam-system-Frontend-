@@ -117,6 +117,7 @@ import { Link, useNavigate } from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
 import useAuthStore from "../store/authStore";
 import { useState } from "react";
+
 const NavbarComponent = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
@@ -171,6 +172,7 @@ const NavbarComponent = () => {
       </List>
     </Box>
   );
+  
   return (
     <>
       <AppBar position="static" color="primary">
