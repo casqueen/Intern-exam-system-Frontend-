@@ -67,8 +67,12 @@ const TakeExams = () => {
     }
 
     try {
-      await axios.post("http://localhost:8080/api/v1/auth/signup", { name, email });
-      navigate(`/testing-room/${selectedExamId}`);
+        const response = await axios.post("http://localhost:8080/api/v1/auth/signup", { name, email });
+        const student = response.data?.data || { name, email };
+        // Proceed whether it's a new student or existing one
+        navigate(`/testing-room/${selectedExamId}`, {
+          state: { personalInfo: { name: student.name || name, email: student.email || email } }
+        });
       setOpenDialog(false);
       setName("");
       setEmail("");
@@ -150,7 +154,7 @@ const TakeExams = () => {
             </TableContainer>
           )}
           <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 4 }}>
-            <Button
+            {/* <Button
               variant="contained"
               color="success"
               onClick={() => navigate("/testing-room")}
@@ -158,7 +162,7 @@ const TakeExams = () => {
               aria-label="Create random exam"
             >
               🎲 Create Random Exam
-            </Button>
+            </Button> */}
             <Button
               variant="outlined"
               color="secondary"

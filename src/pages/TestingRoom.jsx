@@ -26,6 +26,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
 
 const TestingRoom = () => {
   const { id: examId } = useParams();
@@ -36,7 +37,10 @@ const TestingRoom = () => {
   const [duration, setDuration] = useState(30);
   const [numQuestions, setNumQuestions] = useState(10);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [personalInfo, setPersonalInfo] = useState({ name: "", email: "" });
+  
+  const location = useLocation();
+  const personalInfo = location.state?.personalInfo ?? { name: "", email: "" };
+  
   const [maxQuestions, setMaxQuestions] = useState(0);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -219,77 +223,6 @@ const TestingRoom = () => {
                       type="submit"
                       variant="contained"
                       color="primary"
-                      disabled={isSubmitting}
-                      sx={{ px: 4, py: 1.5, borderRadius: 2 }}
-                    >
-                      ✅ Next
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => navigate("/exams")}
-                      sx={{ px: 4, py: 1.5, borderRadius: 2 }}
-                    >
-                      ⬅️ Cancel
-                    </Button>
-                  </Box>
-                </Form>
-              )}
-            </Formik>
-          </Card>
-        </motion.div>
-      </Container>
-    );
-  }
-
-  if (step === 2 && !examId) {
-    return (
-      <Container maxWidth="md" sx={{ mt: 5 }}>
-        <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <Card sx={{ p: 4, borderRadius: 3, boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }}>
-            <Typography variant="h4" color="primary" align="center" gutterBottom sx={{ fontWeight: 600 }}>
-              Configure Your Exam
-            </Typography>
-            <Typography variant="body1" align="center" sx={{ mb: 3, color: "text.secondary" }}>
-              Select the duration for your exam.
-            </Typography>
-            <Formik
-              initialValues={{ duration: 5 }}
-              validationSchema={selectionValidation}
-              onSubmit={async (values) => {
-                setDuration(values.duration);
-                await generateRandomExam(values.duration); // Pass duration only
-                setTimeLeft(values.duration * 60);
-                setStep(3);
-              }}
-            >
-              {({ isSubmitting, setFieldValue, touched, errors }) => (
-                <Form>
-                  <FormControl fullWidth margin="normal" sx={{ mb: 2 }}>
-                    <InputLabel>Duration (minutes)</InputLabel>
-                    <Field
-                      as={Select}
-                      name="duration"
-                      label="Duration (minutes)"
-                      onChange={(e) => setFieldValue("duration", e.target.value)}
-                    >
-                      <MenuItem value={5}>5 minutes</MenuItem>
-                      <MenuItem value={10}>10 minutes</MenuItem>
-                      <MenuItem value={30}>30 minutes</MenuItem>
-                      <MenuItem value={60}>60 minutes</MenuItem>
-                      <MenuItem value={90}>90 minutes</MenuItem>
-                      <MenuItem value={120}>120 minutes</MenuItem>
-                      <MenuItem value={180}>180 minutes</MenuItem>
-                    </Field>
-                  </FormControl>
-                  {touched.duration && errors.duration && (
-                    <Typography color="error" variant="body2">{errors.duration}</Typography>
-                  )}
-                  <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
                       onClick={handleStartExamClick}
                       sx={{ px: 4, py: 1.5, borderRadius: 2 }}
                     >
@@ -303,6 +236,26 @@ const TestingRoom = () => {
                     >
                       ⬅️ Back
                     </Button>
+
+                    {/* <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      disabled={isSubmitting}
+                      sx={{ px: 4, py: 1.5, borderRadius: 2 }}
+                    >
+                      ✅ Next
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => navigate("/exams")}
+                      sx={{ px: 4, py: 1.5, borderRadius: 2 }}
+                    >
+                      ⬅️ Cancel
+                    </Button>
+                    </Box> */}
                   </Box>
                 </Form>
               )}
@@ -312,6 +265,77 @@ const TestingRoom = () => {
       </Container>
     );
   }
+
+  // if (step === 2 && !examId) {
+  //   return (
+  //     <Container maxWidth="md" sx={{ mt: 5 }}>
+  //       <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+  //         <Card sx={{ p: 4, borderRadius: 3, boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }}>
+  //           <Typography variant="h4" color="primary" align="center" gutterBottom sx={{ fontWeight: 600 }}>
+  //             Configure Your Exam
+  //           </Typography>
+  //           <Typography variant="body1" align="center" sx={{ mb: 3, color: "text.secondary" }}>
+  //             Select the duration for your exam.
+  //           </Typography>
+  //           <Formik
+  //             initialValues={{ duration: 5 }}
+  //             validationSchema={selectionValidation}
+  //             onSubmit={async (values) => {
+  //               setDuration(values.duration);
+  //               await generateRandomExam(values.duration); // Pass duration only
+  //               setTimeLeft(values.duration * 60);
+  //               setStep(3);
+  //             }}
+  //           >
+  //             {({ isSubmitting, setFieldValue, touched, errors }) => (
+  //               <Form>
+  //                 <FormControl fullWidth margin="normal" sx={{ mb: 2 }}>
+  //                   <InputLabel>Duration (minutes)</InputLabel>
+  //                   <Field
+  //                     as={Select}
+  //                     name="duration"
+  //                     label="Duration (minutes)"
+  //                     onChange={(e) => setFieldValue("duration", e.target.value)}
+  //                   >
+  //                     <MenuItem value={5}>5 minutes</MenuItem>
+  //                     <MenuItem value={10}>10 minutes</MenuItem>
+  //                     <MenuItem value={30}>30 minutes</MenuItem>
+  //                     <MenuItem value={60}>60 minutes</MenuItem>
+  //                     <MenuItem value={90}>90 minutes</MenuItem>
+  //                     <MenuItem value={120}>120 minutes</MenuItem>
+  //                     <MenuItem value={180}>180 minutes</MenuItem>
+  //                   </Field>
+  //                 </FormControl>
+  //                 {touched.duration && errors.duration && (
+  //                   <Typography color="error" variant="body2">{errors.duration}</Typography>
+  //                 )}
+  //                 <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
+  //                   <Button
+  //                     type="submit"
+  //                     variant="contained"
+  //                     color="primary"
+  //                     onClick={handleStartExamClick}
+  //                     sx={{ px: 4, py: 1.5, borderRadius: 2 }}
+  //                   >
+  //                     ✅ Start Exam
+  //                   </Button>
+  //                   <Button
+  //                     variant="outlined"
+  //                     color="secondary"
+  //                     onClick={() => setStep(1)}
+  //                     sx={{ px: 4, py: 1.5, borderRadius: 2 }}
+  //                   >
+  //                     ⬅️ Back
+  //                   </Button>
+  //                 </Box>
+  //               </Form>
+  //             )}
+  //           </Formik>
+  //         </Card>
+  //       </motion.div>
+  //     </Container>
+  //   );
+  // }
 
 
   return (
