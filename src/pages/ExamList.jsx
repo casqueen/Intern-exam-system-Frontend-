@@ -51,8 +51,8 @@ const ExamList = () => {
       // toast.info(user ? "No exams found. Try creating a new exam or clearing the search." : "No exams available to take. Please check back later.");
       // }
     } catch (error) {
-      console.error("Error fetching exams:", error);
-      toast.error(error.response?.data?.error);
+      // console.error("Error fetching exams:", error);
+      // toast.error(error.response?.data?.error);
     }
   };
   const handleDelete = async (id) => {
@@ -173,7 +173,7 @@ const ExamList = () => {
                           >
                             ❌ Delete
                           </Button>
-                          <Button
+                          {/* <Button
                             component={Link}
                             to={`/exams/results/${exam._id}`}
                             variant="outlined"
@@ -182,7 +182,7 @@ const ExamList = () => {
                             // aria-label={`View Results for ${exam.title}`}
                           >
                             📊 View Results
-                          </Button>
+                          </Button> */}
                         </>
                       ) : (
                         <Button

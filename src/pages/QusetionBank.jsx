@@ -62,7 +62,7 @@ const QuestionBank = () => {
       });
       setQuestions(response.data.questions);
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to fetch questions");
+      // toast.error(error.response?.data?.error || "Failed to fetch questions");
     } finally {
       setLoading(false);
     }

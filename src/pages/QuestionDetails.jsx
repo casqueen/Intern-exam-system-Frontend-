@@ -27,7 +27,7 @@ const QuestionDetails = () => {
       });
       setQuestion(response.data);
     } catch (error) {
-      toast.error("Failed to fetch question");
+      // toast.error("Failed to fetch question");
     }
   };
 

@@ -16,7 +16,7 @@ const StudentExamList = () => {
       const response = await axios.get(`http://localhost:8080/api/v1/student/exams?email=${values.email}`);
       setExams(response.data.exams);
     } catch (error) {
-      toast.error("Failed to fetch exams");
+      // toast.error("Failed to fetch exams");
     }
   };
   return (

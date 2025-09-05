@@ -15,7 +15,7 @@ const Result = () => {
       const response = await axios.get(`http://localhost:8080/api/v1/student/results/${id}`);
       setResult(response.data.examResult);
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to fetch result");
+      // toast.error(error.response?.data?.error || "Failed to fetch result");
     }
   };
   return (
