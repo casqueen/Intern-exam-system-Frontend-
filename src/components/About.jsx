@@ -1,7 +1,10 @@
 import React from "react";
-import { Container, Typography, Box } from "@mui/material";
+import { Container, Typography, Box, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
+  const navigate = useNavigate();
+
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -25,7 +28,21 @@ const About = () => {
           system aims to make the assessment process smoother and more efficient.
         </Typography>
       </Box>
+
+      <Box sx={{ display: "flex", justifyContent: "left", gap: 2, mt: 4 }}>   
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => navigate("/")}
+          sx={{ px: 2, py: 1, borderRadius: 2 }}
+          aria-label="Back to dashboard"
+        >
+          ⬅️ Back to Dashboard
+        </Button>
+      </Box>
     </Container>
+
+    
   );
 };
 
