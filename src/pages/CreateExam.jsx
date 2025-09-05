@@ -10,7 +10,7 @@ import useAuthStore from "../store/authStore";
 const CreateExam = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [initialValues, setInitialValues] = useState({ title: "", questionIds: [] });
+  const [initialValues, setInitialValues] = useState({ title: "", questionIds: [], isRandom: false, questionCount: 0, duration: 0 });
   const [isEditMode, setIsEditMode] = useState(false);
   const [questions, setQuestions] = useState([]);
   const { user } = useAuthStore();
@@ -44,16 +44,41 @@ const CreateExam = () => {
       const response = await axios.get(`http://localhost:8080/api/v1/exams/${id}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
-      setInitialValues({ title: response.data.title, questionIds: response.data.questions.map(q => q._id) });
+      setInitialValues({
+        title: response.data.title,
+        questionIds: response.data.questionIds ? response.data.questionIds.map(q => q._id) : [],
+        isRandom: response.data.isRandom || false,
+        questionCount: response.data.questionCount || 0,
+        duration: response.data.duration ? Math.floor(response.data.duration / 60) : 0,
+      });
     } catch (error) {
       // toast.error("Failed to fetch exam");
     }
   };
 
   const validationSchema = Yup.object().shape({
-    title: Yup.string().required("Exam title is required"),
-    questionIds: Yup.array().min(1, "At least one question is required"),
+  title: Yup.string().required("Exam title is required"),
+
+  questionIds: Yup.array().when("isRandom", {
+    is: false,
+    then: (schema) => schema.min(1, "At least one question is required"),
+    otherwise: (schema) => schema, // leave it as array when random
+  }),
+
+  isRandom: Yup.boolean(),
+
+  questionCount: Yup.number().when("isRandom", {
+    is: true,
+    then: (schema) =>
+      schema
+        .min(1, "Question count must be at least 1")
+        .required("Question count is required for random exams"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  duration: Yup.number().min(0),
   });
+
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
@@ -95,21 +120,76 @@ const CreateExam = () => {
                 error={touched.title && Boolean(errors.title)}
                 helperText={touched.title && errors.title}
               />
-              <Autocomplete
-                multiple
-                options={questions}
-                getOptionLabel={(option) => option.question}
-                value={questions.filter(q => values.questionIds.includes(q._id))}
-                onChange={(e, newValue) => setFieldValue("questionIds", newValue.map(v => v._id))}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Questions"
-                    margin="normal"
-                    error={touched.question && Boolean(errors.questionIds)}
-                    helperText={touched.questionIds && errors.questionIds}
-                  />
+              <FormControlLabel
+                control={<Checkbox checked={values.isRandom} onChange={(e) => setFieldValue("isRandom", e.target.checked)} />}
+                label="Pick questions randomly"
+              />
+              {values.isRandom ? (
+                <>
+                <TextField
+                  label="Question Count"
+                  name="questionCount"
+                  type="number"
+                  fullWidth
+                  margin="normal"
+                  value={values.questionCount}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.questionCount && Boolean(errors.questionCount)}
+                  helperText={touched.questionCount && errors.questionCount}
+                />
+                {/* show a read-only preview of selected questions when editing a random exam */}
+                {values.questionIds && values.questionIds.length > 0 && (
+                  <Box sx={{ mt: 2, p: 2, bgcolor: "background.paper", borderRadius: 1, border: "1px solid rgba(0,0,0,0.06)" }}>
+                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                      Selected questions preview ({values.questionIds.length})
+                    </Typography>
+                    {questions.length === 0 ? (
+                      <Typography variant="body2">Loading questions...</Typography>
+                    ) : (
+                      <Box component="ul" sx={{ pl: 2, m: 0 }}>
+                        {questions
+                          .filter((q) => values.questionIds.includes(q._id))
+                          .map((q) => (
+                            <li key={q._id} style={{ marginBottom: 6 }}>
+                              <Typography variant="body2">{q.question}</Typography>
+                            </li>
+                          ))}
+                      </Box>
+                    )}
+                  </Box>
                 )}
+                </>
+              ) : (
+                <Autocomplete
+                  multiple
+                  options={questions}
+                  getOptionLabel={(option) => option.question}
+                  value={questions.filter(q => values.questionIds.includes(q._id))}
+                  onChange={(e, newValue) => setFieldValue("questionIds", newValue.map(v => v._id))}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select Questions"
+                      margin="normal"
+                      error={touched.question && Boolean(errors.questionIds)}
+                      helperText={touched.questionIds && errors.questionIds}
+                    />
+                  )}
+                />
+              )}
+
+              <TextField
+                label="Duration (minutes)"
+                name="duration"
+                type="number"
+                fullWidth
+                margin="normal"
+                value={values.duration}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.duration && Boolean(errors.duration)}
+                helperText={touched.duration && errors.duration}
               />
               <Box sx={{ textAlign: "center", mt: 4 }}>
                 <Button

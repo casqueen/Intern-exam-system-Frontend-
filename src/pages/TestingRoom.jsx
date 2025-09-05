@@ -29,7 +29,7 @@ import { motion } from "framer-motion";
 
 const TestingRoom = () => {
   const { id: examId } = useParams();
-  const navigate = useNavigate();
+  const navigate = useNavigate();  
   const [step, setStep] = useState(1);
   const [exam, setExam] = useState(null);
   const [answers, setAnswers] = useState([]);
