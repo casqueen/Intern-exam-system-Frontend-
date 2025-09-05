@@ -71,13 +71,12 @@ const Footer = () => {
             </Link>
           </Typography>
           <Box sx={{ display: "flex", gap: 2, justifyContent: { xs: "center", sm: "flex-end" } }}>
-            <Typography variant="body2" color="white"  sx={{ ml: 4 }}>
+            <Typography variant="body2" color="white"  sx={{ ml: 2 }}>
               <Link
                 component={RouterLink}
                 to="/about"
                 color="warning.main"
                 underline="none"
-                sx={{ mr: 2 }}
                 aria-label="About page"
               >
                 About
