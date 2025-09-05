@@ -1,9 +1,11 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavbarComponent from "./components/NavbarComponent";
 import Home from "./pages/Home";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import About from "./components/About";
 import Dashboard from "./components/Dashboard";
 import Register from "./components/Register";
 import StudentList from "./pages/StudentList";
@@ -31,6 +33,7 @@ function App() {
           <NavbarComponent />
           <main style={{ flexGrow: 1 }}>
             <Routes>
+              <Route path="/about" element={<About />} />
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />

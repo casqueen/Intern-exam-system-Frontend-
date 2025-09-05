@@ -1,4 +1,4 @@
-import { AppBar, Box, Typography, Link, Divider } from "@mui/material";
+import { AppBar, Box, Typography, Link, Divider, useTheme, useMediaQuery } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import { motion } from "framer-motion"; // Added for animations
@@ -9,6 +9,10 @@ import { motion } from "framer-motion"; // Added for animations
  */
 const Footer = () => {
   const { user } = useAuthStore();
+  const theme = useTheme(); // ...existing code...
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm")); // ...existing code...
+  const dividerOrientation = isSmall ? "horizontal" : "vertical"; // ...existing code...
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -34,11 +38,7 @@ const Footer = () => {
           <Typography variant="body2" color="white" sx={{ textAlign: { xs: "center", sm: "center" } }}>
             📘 Exam Management System – Your trusted partner in online learning & assessments.
           </Typography>
-          
 
-          {/* <Box sx={{ display: { xs: "block", sm: "none" }, width: "100%" }}>
-            <Divider sx={{ bgcolor: "white", my: 1 }} />
-          </Box> */}
           <Divider
             sx={{
               my: { xs: 1, sm: 0 },
@@ -49,7 +49,7 @@ const Footer = () => {
               alignSelf: { sm: "center" },
               display: { xs: "block", sm: "inline-block" }
             }}
-            orientation={{ xs: "horizontal", sm: "vertical" }}
+            orientation={dividerOrientation}
             flexItem
           />
           
