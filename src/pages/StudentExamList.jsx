@@ -8,9 +8,11 @@ import * as Yup from "yup";
 const StudentExamList = () => {
   const [exams, setExams] = useState([]);
   const navigate = useNavigate();
+
   const validationSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Email is required"),
   });
+  
   const handleSubmit = async (values) => {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/student/exams?email=${values.email}`);
