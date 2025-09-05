@@ -112,7 +112,7 @@ const StudentList = () => {
                   <TableCell>{student.email}</TableCell>
                   <TableCell>{new Date(student.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell>
-                    <Button
+                    {/* <Button
                       component={Link}
                       to={`/students/edit/${student._id}`}
                       variant="outlined"
@@ -122,7 +122,7 @@ const StudentList = () => {
                       aria-label={`Edit ${student.name}`}
                     >
                       ✏️ Edit
-                    </Button>
+                    </Button> */}
                     <Button
                       variant="outlined"
                       color="error"

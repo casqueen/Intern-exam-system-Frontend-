@@ -428,7 +428,7 @@ const TestingRoom = () => {
                 <Button
                   variant="outlined"
                   color="secondary"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/take-exams")}
                   sx={{ px: 4, py: 1.5, borderRadius: 2 }}
                 >
                   ⬅️ Cancel
