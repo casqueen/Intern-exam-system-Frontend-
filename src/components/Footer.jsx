@@ -82,15 +82,6 @@ const Footer = () => {
               >
                 About
               </Link>
-              <Link
-                component={RouterLink}
-                to="/contact"
-                color="warning.main"
-                underline="none"
-                aria-label="Contact page"
-              >
-                Contact
-              </Link>
             </Typography>
           </Box>
         </Box>
