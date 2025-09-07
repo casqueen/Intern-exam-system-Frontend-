@@ -51,7 +51,7 @@ const Result = () => {
               <Button
                 variant="outlined"
                 color="secondary"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/my-exams")}
                 aria-label="Back to Home"
               >
                 ⬅️ Back to Home

@@ -16,6 +16,7 @@ import TakeExam from "./pages/TakeExam";
 import Result from "./pages/Result";
 import ExamResults from "./pages/ExamResults";
 import StudentExamList from "./pages/StudentExamList";
+import StudentResult from "./pages/StudentResult";
 import QuestionList from "./pages/QuestionList";
 import CreateQuestion from "./pages/CreateQuestion";
 import QuestionDetails from "./pages/QuestionDetails";
@@ -54,6 +55,7 @@ function App() {
               <Route path="/questions/create" element={<CreateQuestion />} />
               <Route path="/questions/edit/:id" element={<CreateQuestion />} />
               <Route path="/questions/view/:id" element={<QuestionDetails />} />
+              <Route path="/results/:studentemail" element={<StudentResult />} />
             </Routes>
           </main>
           <Footer />
