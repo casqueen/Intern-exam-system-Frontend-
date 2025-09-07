@@ -124,6 +124,17 @@ const StudentList = () => {
                       ✏️ Edit
                     </Button> */}
                     <Button
+                      component={Link}
+                      to={`/results/${student.email}`}
+                      variant="outlined"
+                      color="info"
+                      sx={{ mr: 3 }}
+                      size="small"
+                      aria-label="View Result"
+                    >
+                      📊 View Result
+                    </Button>        
+                    <Button
                       variant="outlined"
                       color="error"
                       onClick={() => handleDelete(student._id)}
